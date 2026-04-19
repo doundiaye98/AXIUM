@@ -72,6 +72,14 @@ app.config["SESSION_COOKIE_NAME"] = "axium_session"
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 
+# Render (HTTPS + proxy) : en-têtes X-Forwarded-* et cookies sécurisés.
+if (os.environ.get("RENDER") or "").strip().lower() in ("true", "1", "yes"):
+    app.config["PREFERRED_URL_SCHEME"] = "https"
+    app.config["SESSION_COOKIE_SECURE"] = True
+    from werkzeug.middleware.proxy_fix import ProxyFix
+
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)  # type: ignore[method-assign]
+
 # Ancien nom du cookie Flask / Werkzeug (à effacer côté navigateur à chaque réponse).
 _LEGACY_FLASK_SESSION_COOKIE = "session"
 
