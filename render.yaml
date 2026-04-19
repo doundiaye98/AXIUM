@@ -1,0 +1,13 @@
+# Optionnel : déploiement via Blueprint Render (New > Blueprint).
+# Sinon : Web Service > Runtime Docker > root du repo, pas de "Root Directory".
+services:
+  - type: web
+    name: axium-web
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: FLASK_SECRET_KEY
+        generateValue: true
