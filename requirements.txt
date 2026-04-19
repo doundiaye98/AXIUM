@@ -1,1 +1,3 @@
--r toftal_python/requirements.txt
+flask>=3.0.0
+python-dotenv>=1.0.0
+gunicorn>=22.0.0
