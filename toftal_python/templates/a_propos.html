@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}{{ t('about_title') }}{% endblock %}
+{% block body_class %}page-inner page-about{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero--inner page-about-hero" aria-labelledby="about-page-title">
+  <div class="page-hero-bg page-about-hero__bg" aria-hidden="true"></div>
+  <div class="page-about-hero__glow page-about-hero__glow--1" aria-hidden="true"></div>
+  <div class="page-about-hero__glow page-about-hero__glow--2" aria-hidden="true"></div>
+  <div class="container">
+    <p class="page-hero-eyebrow" data-ax-hero style="--ax-d: 0.06s"><span class="page-hero-eyebrow-dot" aria-hidden="true"></span> {{ t('contact_page_eyebrow') }}</p>
+    <h1 class="page-hero-title page-hero-title--modern page-about-hero__title" id="about-page-title" data-ax-hero style="--ax-d: 0.16s">{{ t('about_page_h1_full') }}</h1>
+    <p class="page-hero-lead about-page-tagline page-about-hero__tagline" data-ax-hero style="--ax-d: 0.28s">{{ t('about_page_tagline') }}</p>
+  </div>
+</section>
+
+<section class="section section--light page-section page-section--light page-about-body">
+  <div class="container narrow">
+    <article class="about-article about-article--premium">
+      <div class="about-manifest">
+        {% if lang == 'en' %}
+          {% include 'partials/about_body_en.html' %}
+        {% else %}
+          {% include 'partials/about_body_fr.html' %}
+        {% endif %}
+      </div>
+
+      <div class="services-page-cta services-page-cta--about">
+        <a class="btn btn-primary" href="{{ url_for('nous_ecrire') }}">{{ t('about_btn_contact') }}</a>
+        <a class="btn btn-outline" href="{{ url_for('services') }}">{{ t('about_btn_services') }}</a>
+        <a class="services-page-back" href="{{ url_for('index') }}#a-propos">{{ t('about_back') }}</a>
+      </div>
+    </article>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  function initAboutMotion() {
+    if (!document.documentElement.classList.contains('has-js')) return;
+    var root = document.querySelector('.page-about .about-manifest');
+    if (!root) return;
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var els = root.querySelectorAll(
+      '.about-rule-text, hr.about-rule, h2.about-section-title, .about-block, .about-closing'
+    );
+    var i = 0;
+    els.forEach(function (el) {
+      el.setAttribute('data-ax-motion', '');
+      el.style.setProperty('--ax-d', (0.07 * i) + 's');
+      i += 1;
+      if (reduced) el.classList.add('is-inview');
+    });
+    var cta = document.querySelector('.page-about .services-page-cta--about');
+    if (cta) {
+      cta.setAttribute('data-ax-motion', '');
+      cta.style.setProperty('--ax-d', (0.07 * i + 0.08) + 's');
+      if (reduced) cta.classList.add('is-inview');
+    }
+    if (reduced || !window.IntersectionObserver) return;
+    var obs = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-inview');
+            obs.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.07, rootMargin: '0px 0px -4% 0px' }
+    );
+    document.querySelectorAll('.page-about [data-ax-motion]').forEach(function (el) {
+      obs.observe(el);
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAboutMotion);
+  } else {
+    initAboutMotion();
+  }
+})();
+</script>
+{% endblock %}

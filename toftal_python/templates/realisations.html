@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ t('realisations_title') }}{% endblock %}
+{% block body_class %}page-inner page-realisations{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero--inner" aria-labelledby="realisations-page-title">
+  <div class="page-hero-bg" aria-hidden="true"></div>
+  <div class="container">
+    <p class="page-hero-eyebrow"><span class="page-hero-eyebrow-dot" aria-hidden="true"></span> {{ t('contact_page_eyebrow') }}</p>
+    <h1 class="page-hero-title page-hero-title--modern" id="realisations-page-title">{{ t('real_page_h1') }} <span class="title-accent">{{ t('real_page_h1_accent') }}</span></h1>
+    <p class="page-hero-lead">{{ t('real_page_lead') }}</p>
+  </div>
+</section>
+
+<section class="section section--light page-section page-section--light">
+  <div class="container">
+    <p class="section-kicker center">{{ t('real_vitrine_kicker') }}</p>
+    <h2 class="section-title center section-title--modern">{{ t('real_h2') }} <span class="title-accent">{{ t('real_h2_accent') }}</span></h2>
+
+    <p class="realisations-note">{{ t('real_note') }}</p>
+
+    <div class="services-page-cta">
+      <a class="btn btn-primary" href="{{ url_for('nous_ecrire') }}">{{ t('real_cta_project') }}</a>
+      <a class="btn btn-outline" href="{{ url_for('services') }}">{{ t('real_cta_services') }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

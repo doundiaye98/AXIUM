@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<!-- Gabarit dérivé d’un site de référence protégé — conserver les crédits / ATTRIBUTION.txt -->
+<html lang="{{ lang }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a1628">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="{{ t('meta_description') }}">
+  <title>{% block title %}{{ t('title_default') }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&family=Orbitron:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script>document.documentElement.classList.add('has-js');</script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip-link" href="#main">{{ t('skip_content') }}</a>
+  <a class="skip-link skip-link--footer" href="#footer">{{ t('skip_footer') }}</a>
+
+  <header class="site-header" id="top">
+    <div class="site-header__accent" aria-hidden="true"></div>
+    <div class="container header-inner">
+      <a href="{{ url_for('index') }}" class="logo">
+        <img class="logo_image" src="{{ url_for('static', filename='img/logo-axium.jpeg') }}" width="200" height="52" alt="{{ t('logo_alt') }}">
+      </a>
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="{{ t('menu_aria') }}">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav" aria-label="{{ t('nav_primary') }}">
+        {% set lang_next = '/' if request.path.startswith('/set-language/') else request.full_path %}
+        <div class="lang-switch" role="group" aria-label="{{ t('lang_switch_aria') }}">
+          <a href="{{ url_for('set_language', code='fr', next=lang_next) }}" class="lang-switch__btn{% if lang == 'fr' %} is-active{% endif %}" hreflang="fr" title="{{ t('lang_switch_fr_title') }}" aria-label="{{ t('lang_switch_fr_title') }}">{{ t('lang_switch_fr') }}</a>
+          <a href="{{ url_for('set_language', code='en', next=lang_next) }}" class="lang-switch__btn{% if lang == 'en' %} is-active{% endif %}" hreflang="en" title="{{ t('lang_switch_en_title') }}" aria-label="{{ t('lang_switch_en_title') }}">{{ t('lang_switch_en') }}</a>
+        </div>
+        <ul>
+          <li><a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint == 'index' else '' }}">{{ t('nav_home') }}</a></li>
+          <li><a href="{{ url_for('a_propos') }}" class="{{ 'active' if request.endpoint == 'a_propos' else '' }}">{{ t('nav_about') }}</a></li>
+          <li><a href="{{ url_for('services') }}" class="{{ 'active' if request.endpoint == 'services' else '' }}">{{ t('nav_services') }}</a></li>
+          <li><a href="{{ url_for('realisations') }}" class="{{ 'active' if request.endpoint == 'realisations' else '' }}">{{ t('nav_work') }}</a></li>
+        </ul>
+        <div class="nav-social">
+          <a href="#" class="soc soc-fb" aria-label="Facebook"><span>facebook</span></a>
+          <a href="#" class="soc soc-x" aria-label="X"><span>X</span></a>
+          <a href="#" class="soc soc-ig" aria-label="Instagram"><span>instagram</span></a>
+        </div>
+        <a class="header-cta" href="{{ url_for('nous_ecrire') }}">{{ t('nav_write_us') }}</a>
+      </nav>
+    </div>
+  </header>
+  <div class="nav-backdrop" id="nav-backdrop" aria-hidden="true"></div>
+
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer" id="footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="{{ url_for('index') }}" class="logo footer-logo">
+          <img class="logo_image" src="{{ url_for('static', filename='img/logo-axium.jpeg') }}" width="200" height="52" alt="{{ t('logo_alt') }}" loading="lazy">
+        </a>
+        <ul class="footer-nav">
+          <li><a href="{{ url_for('index') }}">{{ t('nav_home') }}</a></li>
+          <li><a href="{{ url_for('a_propos') }}">{{ t('nav_about') }}</a></li>
+          <li><a href="{{ url_for('services') }}">{{ t('nav_services') }}</a></li>
+          <li><a href="{{ url_for('realisations') }}">{{ t('nav_work') }}</a></li>
+        </ul>
+      </div>
+      <div class="footer-social">
+        <a href="#" aria-label="Instagram">Instagram</a>
+        <a href="#" aria-label="X">twitter-x</a>
+        <a href="#" aria-label="Facebook">facebook</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p><strong>AXIUM</strong> &copy; {{ t('footer_rights') }} <span class="sn-flag" title="{{ t('footer_flag_title') }}">&#127480;&#127475;</span></p>
+      <p class="footer-attribution" role="note">{{ t('footer_attribution')|safe }}</p>
+    </div>
+  </footer>
+
+  <div
+    id="ax-chat"
+    class="ax-chat"
+    data-contact-href="{{ url_for('nous_ecrire') }}#contact-form"
+    data-lang="{{ lang }}"
+    data-api-chat="{{ url_for('api_chat') }}"
+    data-api-reset="{{ url_for('api_chat_reset') }}"
+    data-api-status="{{ url_for('api_chat_status') }}"
+    data-llm="{{ '1' if chat_llm_configured else '0' }}"
+  >
+    <button type="button" id="ax-chat-toggle" class="ax-chat-toggle" aria-expanded="false" aria-controls="ax-chat-panel" aria-label="{{ chat_i18n['open_aria'] }}">
+      <span class="ax-chat-toggle-icon" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C7.03 3 3 6.58 3 11c0 2.13 1.05 4.05 2.75 5.35L5 21l4.92-1.42C11.28 20.52 11.63 20.55 12 20.55 16.97 20.55 21 16.97 21 12.55 21 8.13 16.97 3 12 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8.5 11.5h7M8.5 8.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </span>
+    </button>
+    <div id="ax-chat-panel" class="ax-chat-panel" hidden role="dialog" aria-modal="true" aria-labelledby="ax-chat-title">
+      <header class="ax-chat-head">
+        <div class="ax-chat-head-text">
+          <h2 id="ax-chat-title" class="ax-chat-title">{{ chat_i18n['title'] }}</h2>
+          <p class="ax-chat-sub">{{ chat_i18n['subtitle'] }}</p>
+        </div>
+        <button type="button" id="ax-chat-close" class="ax-chat-close" aria-label="{{ chat_i18n['close_aria'] }}">&times;</button>
+      </header>
+      <div id="ax-chat-body" class="ax-chat-body" aria-live="polite"></div>
+      <div class="ax-chat-foot">
+        <div id="ax-chat-unconfigured" class="ax-chat-unconfigured"{% if chat_llm_configured %} hidden{% endif %}>
+          <p>{{ chat_i18n['error_unconfigured'] }}</p>
+        </div>
+        <div id="ax-chat-compose" class="ax-chat-compose"{% if not chat_llm_configured %} hidden{% endif %}>
+          <label class="ax-chat-sr-only" for="ax-chat-input">{{ chat_i18n['placeholder'] }}</label>
+          <textarea id="ax-chat-input" class="ax-chat-textarea ax-chat-input" rows="2" maxlength="4000" placeholder="{{ chat_i18n['placeholder'] }}"></textarea>
+          <div class="ax-chat-compose-row">
+            <button type="button" id="ax-chat-new" class="btn btn-outline ax-chat-secondary ax-chat-btn-small">{{ chat_i18n['new_chat'] }}</button>
+            <button type="button" id="ax-chat-send" class="btn btn-primary ax-chat-primary ax-chat-send-btn">{{ chat_i18n['send'] }}</button>
+          </div>
+        </div>
+        <div class="ax-chat-open-form-wrap">
+          <button type="button" id="ax-chat-open-form" class="btn btn-outline ax-chat-secondary">{{ chat_i18n['open_form'] }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.AXIUM_CHAT_I18N = {{ chat_i18n | tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/chat-assistant.js') }}" defer></script>
+  <script>
+    (function () {
+      function run() {
+        try {
+          if (typeof window.AXIUM_applyChatPrefillFromSession === 'function') {
+            window.AXIUM_applyChatPrefillFromSession();
+          }
+        } catch (e) {}
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', run);
+      } else {
+        run();
+      }
+    })();
+  </script>
+  <script>
+    (function () {
+      var btn = document.querySelector('.nav-toggle');
+      var nav = document.getElementById('site-nav');
+      var backdrop = document.getElementById('nav-backdrop');
+      if (!btn || !nav) return;
+      function setNavOpen(open) {
+        nav.classList.toggle('is-open', open);
+        btn.classList.toggle('is-open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (backdrop) {
+          backdrop.classList.toggle('is-visible', open);
+          backdrop.setAttribute('aria-hidden', open ? 'false' : 'true');
+        }
+        document.body.classList.toggle('nav-drawer-open', open);
+      }
+      btn.addEventListener('click', function () {
+        setNavOpen(!nav.classList.contains('is-open'));
+      });
+      if (backdrop) {
+        backdrop.addEventListener('click', function () {
+          setNavOpen(false);
+        });
+      }
+      nav.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+          if (window.matchMedia('(max-width: 900px)').matches) setNavOpen(false);
+        });
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && nav.classList.contains('is-open')) setNavOpen(false);
+      });
+      var mqDesk = window.matchMedia('(min-width: 901px)');
+      function closeNavIfDesktop() {
+        if (mqDesk.matches && nav.classList.contains('is-open')) setNavOpen(false);
+      }
+      mqDesk.addEventListener('change', closeNavIfDesktop);
+    })();
+    (function () {
+      var header = document.querySelector('.site-header');
+      if (header) {
+        function onScroll() {
+          header.classList.toggle('is-scrolled', window.scrollY > 16);
+        }
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+      }
+    })();
+    (function () {
+      if (!document.documentElement.classList.contains('has-js')) return;
+      if (!window.IntersectionObserver || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.querySelectorAll('[data-ax-motion]').forEach(function (el) {
+          el.classList.add('is-inview');
+        });
+        return;
+      }
+      var obs = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-inview');
+              obs.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.06, rootMargin: '0px 0px -6% 0px' }
+      );
+      document.querySelectorAll('[data-ax-motion]').forEach(function (el) {
+        obs.observe(el);
+      });
+    })();
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

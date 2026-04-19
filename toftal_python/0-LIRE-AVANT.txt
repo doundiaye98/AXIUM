@@ -1,0 +1,63 @@
+================================================================================
+  Site AXIUM (Flask) — pourquoi "connexion refusee" / ERR_CONNECTION_REFUSED
+================================================================================
+
+  Ce site ne passe PAS par WAMP/Apache sur le port 5001.
+
+  Il faut DEMARRER le serveur Python, puis garder la fenetre noire OUVERTE :
+
+ • RECOMMANDE — a la racine du dossier AXIUM :  DEMARRER-ICI.cmd  (double-clic)
+    • ou :  Lancer-AXIUM-Flask.cmd    • ou dans toftal_python seul :  run.bat   (sans point a la fin : pas "run.bat.")
+
+  Ensuite seulement, ouvrez dans le navigateur par exemple :
+
+    http://127.0.0.1:5001/
+    http://127.0.0.1:5001/services/
+
+  SITE CASSÉ (page blanche, "isn't working") : ouvrir UNE FOIS http://127.0.0.1:5001/_axium/nettoyer-cookies (adaptez le port : 5001 = celui affiché au démarrage), puis accueil et F5.
+  Sinon : navigation privée ou autre navigateur.
+
+  Si vous fermez la fenetre noire, le site redevient inaccessible.
+
+  Premiere installation (si erreur "Flask introuvable"), dans une invite cmd :
+
+    cd /d chemin\vers\toftal_python
+    py -3 -m pip install -r requirements.txt
+
+  Proxy : si Chrome utilise un proxy, ajoutez une exception pour "localhost"
+  et "127.0.0.1", ou desactivez le proxy pour les adresses locales.
+
+--------------------------------------------------------------------------------
+  Chrome : "This page isn't working" / "unable to handle this request"
+--------------------------------------------------------------------------------
+
+  Le serveur repond mais une erreur survient (souvent HTTP 500), ou la reponse est vide.
+
+  • Regardez la fenetre run.bat : une trace Python (ligne rouge / Exception) indique la cause.
+  • Verifiez que l'URL utilise le MEME port que celui affiche au demarrage (ex. :5001).
+  • Supprimez les cookies du site pour 127.0.0.1 (Parametres > Confidentialite > cookies)
+ puis rechargez la page (F5). (Anciennes versions mettaient tout le chat dans le cookie :
+ apres plusieurs messages le site pouvait planter — corrigé, mais il faut vider les cookies une fois.)
+  • Si vous avez un fichier .env : enregistrez-le en UTF-8 sans caracteres bizarres,
+    ou renommez-le temporairement pour tester sans.
+  • Dans Chrome F12 > onglet Reseau : ouvrez la requete vers 127.0.0.1 et verifiez
+ l'en-tete de reponse "X-AXIUM-App: axium-flask". S'il est absent, ce n'est pas
+    cette appli qui repond (mauvais port ou autre programme).
+
+--------------------------------------------------------------------------------
+  Chat IA (widget "Assistant AXIUM")
+--------------------------------------------------------------------------------
+
+  Sans cle API, le chat affiche "non configure". Pour l'activer :
+
+  1) pip :  py -3 -m pip install -r requirements.txt
+  2) Copier le fichier  env.example  vers  .env  (meme dossier toftal_python)
+  3) Ouvrir .env et coller votre cle : OPENAI_API_KEY=sk-...
+   4) Redemarrer le serveur (run.bat).
+
+  Cle : https://platform.openai.com/api-keys  (compte et facturation OpenAI).
+
+  Sans OpenAI : dans .env ajoutez  AXIUM_CHAT_LOCAL=1  puis redemarrez.
+  Le chat repond en mode local (pas un vrai ChatGPT) et renvoie vers le formulaire.
+
+================================================================================

@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block title %}{{ t('contact_title') }}{% endblock %}
+{% block body_class %}page-inner page-contact{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero--inner" aria-labelledby="contact-page-title">
+  <div class="page-hero-bg" aria-hidden="true"></div>
+  <div class="container">
+    <p class="page-hero-eyebrow"><span class="page-hero-eyebrow-dot" aria-hidden="true"></span> {{ t('contact_page_eyebrow') }}</p>
+    <h1 class="page-hero-title page-hero-title--modern" id="contact-page-title">{{ t('contact_page_h1') }}</h1>
+    <p class="page-hero-lead">{{ t('contact_page_lead') }}</p>
+  </div>
+</section>
+
+<section class="section cta-final page-contact-section" aria-labelledby="contact-form-heading">
+  <div class="container">
+    <div class="cta-inner ax-cta-glow page-contact-cta-inner" data-ax-motion style="--ax-d: 0s">
+      <div class="cta-copy page-contact-copy">
+        <h2 class="page-contact-form-title" id="contact-form-heading">{{ t('cta_h2') }}</h2>
+        <p class="cta-lead page-contact-lead">{{ t('cta_lead') }}</p>
+        <p class="cta-email-line"><span class="cta-email-label">{{ t('cta_email_label') }}</span> <span class="cta-email-address" id="contact-email-display">{{ contact_email }}</span></p>
+
+        <div class="cta-project-panel page-contact-panel" id="contact-form" role="region" aria-label="{{ t('cta_panel_aria') }}" tabindex="-1">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="cta-flash-list" role="alert">
+                {% for category, message in messages %}
+                  <p class="cta-flash cta-flash--{{ category }}">{{ message }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+
+          <header class="cta-project-head">
+            <p class="cta-project-kicker">{{ t('cta_kicker') }}</p>
+            <p class="cta-project-lead">{{ t('cta_panel_lead')|safe }}</p>
+          </header>
+
+          <form class="cta-contact-form" method="post" action="{{ url_for('nous_ecrire') }}" novalidate>
+            <input type="text" name="website" class="cta-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" value="">
+            <div class="cta-field-row">
+              <label class="cta-field">
+                <span class="cta-field-label">{{ t('form_name') }} <abbr title="{{ t('form_required_abbr') }}">*</abbr></span>
+                <input type="text" name="name" required autocomplete="name" minlength="2" maxlength="120" placeholder="{{ t('form_name_ph') }}">
+              </label>
+              <label class="cta-field">
+                <span class="cta-field-label">{{ t('form_email') }} <abbr title="{{ t('form_required_abbr') }}">*</abbr></span>
+                <input type="email" name="email" required autocomplete="email" maxlength="200" placeholder="{{ t('form_email_ph') }}">
+              </label>
+            </div>
+            <label class="cta-field">
+              <span class="cta-field-label">{{ t('form_phone') }} <span class="cta-optional">{{ t('form_optional') }}</span></span>
+              <input type="tel" name="phone" autocomplete="tel" maxlength="40" placeholder="{{ t('form_phone_ph') }}">
+            </label>
+            <label class="cta-field">
+              <span class="cta-field-label">{{ t('form_message') }} <abbr title="{{ t('form_required_abbr') }}">*</abbr></span>
+              <textarea name="message" required minlength="10" maxlength="8000" rows="5" placeholder="{{ t('form_message_ph') }}"></textarea>
+            </label>
+            <button type="submit" class="btn btn-primary cta-form-submit">{{ t('form_submit') }}</button>
+            <p class="cta-form-note">{{ t('form_privacy') }}</p>
+          </form>
+
+          <div class="cta-alt-block">
+            <p class="cta-alt-kicker">{{ t('cta_alt_kicker') }}</p>
+            <a class="cta-mailto-card" href="{{ mailto_href }}">
+              <span class="cta-mailto-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16v12H4V6z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M4 8l8 5 8-5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span class="cta-mailto-body">
+                <span class="cta-mailto-title">{{ t('cta_mailto_title') }}</span>
+                <span class="cta-mailto-desc">{{ t('cta_mailto_desc') }} <strong>{{ contact_email }}</strong>.</span>
+              </span>
+            </a>
+          </div>
+
+          <details class="cta-project-tips">
+            <summary>{{ t('cta_details_summary') }}</summary>
+            <ul>
+              <li>{{ t('cta_tip1') }}</li>
+              <li>{{ t('cta_tip2') }}</li>
+            </ul>
+            <div class="cta-copy-row">
+              <button type="button" class="btn btn-outline btn-cta-inline" id="cta-copy-email" data-email="{{ contact_email }}">{{ t('cta_copy_email') }}</button>
+              <button type="button" class="btn btn-outline btn-cta-inline" id="cta-copy-template">{{ t('cta_copy_template') }}</button>
+            </div>
+            <p class="cta-feedback" id="cta-copy-feedback" role="status" aria-live="polite"></p>
+          </details>
+
+          <p class="page-contact-back-wrap">
+            <a class="page-contact-back" href="{{ url_for('index') }}">{{ t('contact_page_back') }}</a>
+          </p>
+        </div>
+      </div>
+      <div class="cta-astro page-contact-astro" aria-hidden="true">
+        <div class="astro-bubble">{{ t('cta_bubble') }}</div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.AXIUM_CTA_STRINGS = {
+    mailTemplate: {{ t('cta_mail_template')|tojson }},
+    emailOk: {{ t('cta_js_email_ok')|tojson }},
+    templateOk: {{ t('cta_js_template_ok')|tojson }},
+    copyFail: {{ t('cta_js_copy_fail')|tojson }}
+  };
+</script>
+<script>
+(function () {
+  var S = window.AXIUM_CTA_STRINGS || {};
+  var panel = document.getElementById('contact-form');
+  var copyEmail = document.getElementById('cta-copy-email');
+  var copyTpl = document.getElementById('cta-copy-template');
+  var feed = document.getElementById('cta-copy-feedback');
+  if (!copyEmail || !feed) return;
+
+  var email = copyEmail.getAttribute('data-email') || '';
+
+  function showFeedback(msg) {
+    feed.textContent = msg;
+    window.setTimeout(function () {
+      feed.textContent = '';
+    }, 5000);
+  }
+
+  function copyToClipboard(text, okMsg) {
+    function manual() {
+      showFeedback(S.copyFail || '');
+      var addr = document.getElementById('contact-email-display');
+      if (text === email && addr && window.getSelection) {
+        var range = document.createRange();
+        range.selectNodeContents(addr);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      navigator.clipboard.writeText(text).then(function () {
+        showFeedback(okMsg);
+      }).catch(manual);
+    } else {
+      manual();
+    }
+  }
+
+  var emailTemplate = S.mailTemplate || '';
+
+  copyEmail.addEventListener('click', function () {
+    copyToClipboard(email, S.emailOk || '');
+  });
+
+  if (copyTpl) {
+    copyTpl.addEventListener('click', function () {
+      copyToClipboard(emailTemplate, S.templateOk || '');
+    });
+  }
+
+  if (document.querySelector('.cta-flash') && panel) {
+    try {
+      panel.focus();
+    } catch (e) {}
+  }
+
+  if (window.location.hash === '#contact-form' && panel) {
+    window.setTimeout(function () {
+      try {
+        panel.focus();
+      } catch (e) {}
+    }, 300);
+  }
+})();
+</script>
+{% endblock %}

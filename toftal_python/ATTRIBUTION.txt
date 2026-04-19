@@ -1,0 +1,27 @@
+================================================================================
+  RÉFÉRENCE AU SITE D’ORIGINE (PROTECTION DES DROITS)
+================================================================================
+
+Ce dépôt (dossier toftal_python) repose sur une adaptation d’un gabarit / d’une
+structure de site de référence soumis à protection (droits d’auteur, marques ou
+conditions d’utilisation du site source).
+
+À CONSERVER :
+  • La présente mention et toute indication contractuelle fournie par le
+    titulaire des droits sur le site d’origine.
+  • Les crédits ou liens exigés par la licence ou l’accord qui autorise
+    la réutilisation.
+
+IDENTITÉ DU SITE SOURCE (à compléter par le responsable du projet) :
+  Dénomination : _______________________________________________
+  URL          : _______________________________________________
+  Référence contrat / licence : _______________________________
+
+CONTENU SPÉCIFIQUE AXIUM :
+  Textes, logo, coordonnées, offres et nom « AXIUM GROUP » sont propres au
+  mandataire. Ils ne sauraient engager le site d’origine.
+
+Pour toute question juridique, s’appuyer sur les documents signés avec le
+titulaire du site de référence.
+
+================================================================================

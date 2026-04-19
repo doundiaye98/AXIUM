@@ -1,0 +1,351 @@
+{% extends "base.html" %}
+{% block title %}{{ t('title_default') }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="container hero-inner">
+    <div class="hero-main">
+      <p class="hero-badge" data-ax-hero style="--ax-d: 0.08s"><span class="hero-badge-dot" aria-hidden="true"></span> {{ t('hero_badge') }}</p>
+      <h1 class="hero-title hero-title--welcome" data-ax-hero style="--ax-d: 0.18s">{{ t('hero_h1_before') }} <span class="brand-line brand-line--shimmer">AXIUM GROUP</span></h1>
+      <p class="hero-lead" data-ax-hero style="--ax-d: 0.32s">{{ t('hero_lead') }}</p>
+      <div class="hero-actions" data-ax-hero style="--ax-d: 0.46s">
+        <a href="#contact-cta" class="btn btn-primary">{{ t('hero_cta_primary') }}</a>
+        <a href="{{ url_for('services') }}" class="btn btn-ghost">{{ t('hero_cta_secondary') }}</a>
+      </div>
+    </div>
+    <div class="hero-astro" aria-hidden="true" data-ax-hero style="--ax-d: 0.22s">
+      <div class="astro-card ax-float">
+        <span class="astro-hi">{{ t('astro_hi') }}</span>
+        {# Zone visuelle : illustration de marque ci-dessous. Pour une photo, placez un fichier dans static/img/ (ex. hero-axium.jpg) et remplacez le <svg> par : <img class="astro-photo" src="{{ url_for('static', filename='img/hero-axium.jpg') }}" alt="AXIUM GROUP" width="400" height="220" loading="lazy"> #}
+        <figure class="astro-visual">
+          <svg class="astro-visual-svg" viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{{ t('svg_hero_alt') }}">
+            <title>{{ t('svg_hero_alt') }}</title>
+            <defs>
+              <linearGradient id="axium-sky" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#1e3a5f"/>
+                <stop offset="100%" stop-color="#060d16"/>
+              </linearGradient>
+              <linearGradient id="axium-beam" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#22d3ee" stop-opacity="0"/>
+                <stop offset="45%" stop-color="#22d3ee" stop-opacity="0.95"/>
+                <stop offset="55%" stop-color="#67e8f9" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+              </linearGradient>
+              <filter id="axium-glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="2" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <rect width="320" height="180" rx="12" fill="url(#axium-sky)"/>
+            <g opacity="0.15" stroke="#94a3b8" stroke-width="0.5" fill="none">
+              <path d="M20 140 L300 140 M40 40 L40 160 M160 30 L160 150 M280 50 L280 170"/>
+              <path d="M60 100 L260 60 M80 120 L240 90"/>
+            </g>
+            <rect class="astro-beam" x="24" y="86" width="272" height="3" rx="1.5" fill="url(#axium-beam)" filter="url(#axium-glow)"/>
+            <circle cx="64" cy="72" r="6" fill="#22d3ee" opacity="0.85"/>
+            <circle cx="160" cy="52" r="8" fill="#67e8f9" opacity="0.5"/>
+            <circle cx="256" cy="72" r="6" fill="#22d3ee" opacity="0.85"/>
+            <path d="M130 118 L160 98 L190 118 L190 148 L130 148 Z" fill="none" stroke="#22d3ee" stroke-width="1.2" opacity="0.45"/>
+            <path d="M150 108 L170 108 L170 128 L150 128 Z" fill="#22d3ee" opacity="0.2"/>
+          </svg>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--light section-about section-about-axium" id="a-propos">
+  <div class="container narrow">
+    <header class="section-about-header">
+      <p class="section-kicker center">{{ t('about_kicker') }}</p>
+      <h2 class="section-title axium-reveal axium-reveal--1 section-title--modern">{{ t('about_title_h2') }} <span class="title-accent">{{ t('about_title_accent') }}</span></h2>
+      <p class="section-about-tagline axium-reveal axium-reveal--2"><span class="tagline-dot" aria-hidden="true"></span> {{ t('about_tagline') }} <span class="tagline-dot tagline-dot--end" aria-hidden="true"></span></p>
+    </header>
+    <div class="prose axium-reveal axium-reveal--3">
+      <p>{{ t('about_p1') }}</p>
+      <p>{{ t('about_p2') }}</p>
+      <p>{{ t('about_p3') }}</p>
+    </div>
+    <div class="prose prose-highlight axium-reveal axium-reveal--4">
+      <p>{{ t('about_highlight') }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section--light section-services-head" id="services">
+  <div class="container">
+    <p class="section-kicker center" data-ax-motion style="--ax-d: 0s">{{ t('services_head_kicker') }}</p>
+    <h2 class="section-title center section-title--modern" data-ax-motion style="--ax-d: 0.06s">{{ t('services_head_title') }} <span class="title-accent">{{ t('services_head_accent') }}</span></h2>
+    <div class="services-intro-grid">
+      <article class="service-block" data-ax-motion style="--ax-d: 0s">
+        <h3>{{ t('svc_ui_h') }}</h3>
+        <p>{{ t('svc_ui_p') }}</p>
+      </article>
+      <article class="service-block" data-ax-motion style="--ax-d: 0.07s">
+        <h3>{{ t('svc_mobile_h') }}</h3>
+        <p>{{ t('svc_home_mobile_p') }}</p>
+      </article>
+      <article class="service-block" data-ax-motion style="--ax-d: 0.14s">
+        <h3>{{ t('svc_web_h') }}</h3>
+        <p>{{ t('svc_home_web_p') }}</p>
+      </article>
+      <article class="service-block" data-ax-motion style="--ax-d: 0.21s">
+        <h3>{{ t('svc_erp_h') }}</h3>
+        <p>{{ t('svc_erp_p') }}</p>
+      </article>
+      <article class="service-block" data-ax-motion style="--ax-d: 0.28s">
+        <h3>{{ t('svc_consult_h') }}</h3>
+        <p>{{ t('svc_consult_p') }}</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section--dark-band section-services-cards" aria-label="{{ t('section_cards_aria') }}">
+  <div class="container">
+    <div class="services-cards">
+      {% set cards = [
+        (t('flip_ui'), 'card-ui'),
+        (t('flip_mobile'), 'card-mobile'),
+        (t('flip_web'), 'card-web'),
+        (t('flip_erp'), 'card-erp'),
+        (t('flip_consult'), 'card-consult'),
+      ] %}
+      {% for title, card_class in cards %}
+      <div class="flip-card {{ card_class }}" tabindex="0" data-ax-motion style="--ax-d: {{ (loop.index0 * 0.07)|round(2) }}s">
+        <div class="flip-inner">
+          <div class="flip-face flip-front"><span class="card-icon" aria-hidden="true"></span><span class="card-title">{{ title }}</span></div>
+          <div class="flip-face flip-back"><span class="card-icon" aria-hidden="true"></span><span class="card-title">{{ title }}</span></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="section-cta-row" data-ax-motion style="--ax-d: 0.35s">
+      <a href="#contact-cta" class="btn btn-outline">{{ t('adventure_btn') }}</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--light section-portfolio" id="realisations">
+  <div class="container">
+    <p class="section-kicker center" data-ax-motion style="--ax-d: 0s">{{ t('portfolio_kicker') }}</p>
+    <h2 class="section-title center section-title--modern" data-ax-motion style="--ax-d: 0.06s">{{ t('portfolio_title') }} <span class="title-accent">{{ t('portfolio_accent') }}</span></h2>
+    <div class="portfolio-placeholder" data-ax-motion style="--ax-d: 0.12s">
+      <span class="portfolio-placeholder-icon" aria-hidden="true"></span>
+      <p>{{ t('portfolio_placeholder')|safe }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section-events">
+  <div class="container">
+    <p class="section-kicker center" data-ax-motion style="--ax-d: 0s">{{ t('events_kicker') }}</p>
+    <h2 class="section-title center section-title--modern" data-ax-motion style="--ax-d: 0.06s">{{ t('events_title') }} <span class="title-accent">{{ t('events_accent') }}</span></h2>
+    <ul class="events-grid" role="list" data-ax-motion style="--ax-d: 0.12s">
+      <li class="event-card">
+        <span class="event-card-label">{{ t('event_label_meet') }}</span>
+        <span class="event-card-title">{{ t('event_card_title_1') }}</span>
+      </li>
+      <li class="event-card">
+        <span class="event-card-label">{{ t('event_label_community') }}</span>
+        <span class="event-card-title">{{ t('event_card_title_2') }}</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="section cta-final" id="contact-cta">
+  <div class="container cta-inner ax-cta-glow" data-ax-motion style="--ax-d: 0s">
+    <div class="cta-copy">
+      <h2>{{ t('cta_h2') }}</h2>
+      <p class="cta-lead">{{ t('cta_lead') }}</p>
+      <p class="cta-email-line"><span class="cta-email-label">{{ t('cta_email_label') }}</span> <span class="cta-email-address" id="contact-email-display">{{ contact_email }}</span></p>
+
+      <div class="cta-project-wrap">
+        <button type="button" class="btn btn-primary btn-cta-launch" id="cta-launch-toggle" aria-expanded="false" aria-controls="cta-project-panel">
+          <span class="btn-cta-launch-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="btn-cta-launch-label">{{ t('cta_launch') }}</span>
+        </button>
+
+        <div id="cta-project-panel" class="cta-project-panel" role="region" aria-label="{{ t('cta_panel_aria') }}" tabindex="-1" hidden>
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="cta-flash-list" role="alert">
+                {% for category, message in messages %}
+                  <p class="cta-flash cta-flash--{{ category }}">{{ message }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+
+          <header class="cta-project-head">
+            <p class="cta-project-kicker">{{ t('cta_kicker') }}</p>
+            <p class="cta-project-lead">{{ t('cta_panel_lead')|safe }}</p>
+          </header>
+
+          <form class="cta-contact-form" method="post" action="{{ url_for('nous_ecrire') }}" novalidate>
+            <input type="text" name="website" class="cta-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" value="">
+            <div class="cta-field-row">
+              <label class="cta-field">
+                <span class="cta-field-label">{{ t('form_name') }} <abbr title="{{ t('form_required_abbr') }}">*</abbr></span>
+                <input type="text" name="name" required autocomplete="name" minlength="2" maxlength="120" placeholder="{{ t('form_name_ph') }}">
+              </label>
+              <label class="cta-field">
+                <span class="cta-field-label">{{ t('form_email') }} <abbr title="{{ t('form_required_abbr') }}">*</abbr></span>
+                <input type="email" name="email" required autocomplete="email" maxlength="200" placeholder="{{ t('form_email_ph') }}">
+              </label>
+            </div>
+            <label class="cta-field">
+              <span class="cta-field-label">{{ t('form_phone') }} <span class="cta-optional">{{ t('form_optional') }}</span></span>
+              <input type="tel" name="phone" autocomplete="tel" maxlength="40" placeholder="{{ t('form_phone_ph') }}">
+            </label>
+            <label class="cta-field">
+              <span class="cta-field-label">{{ t('form_message') }} <abbr title="{{ t('form_required_abbr') }}">*</abbr></span>
+              <textarea name="message" required minlength="10" maxlength="8000" rows="4" placeholder="{{ t('form_message_ph') }}"></textarea>
+            </label>
+            <button type="submit" class="btn btn-primary cta-form-submit">{{ t('form_submit') }}</button>
+            <p class="cta-form-note">{{ t('form_privacy') }}</p>
+          </form>
+
+          <div class="cta-alt-block">
+            <p class="cta-alt-kicker">{{ t('cta_alt_kicker') }}</p>
+            <a class="cta-mailto-card" href="{{ mailto_href }}">
+              <span class="cta-mailto-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16v12H4V6z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M4 8l8 5 8-5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span class="cta-mailto-body">
+                <span class="cta-mailto-title">{{ t('cta_mailto_title') }}</span>
+                <span class="cta-mailto-desc">{{ t('cta_mailto_desc') }} <strong>{{ contact_email }}</strong>.</span>
+              </span>
+            </a>
+          </div>
+
+          <details class="cta-project-tips">
+            <summary>{{ t('cta_details_summary') }}</summary>
+            <ul>
+              <li>{{ t('cta_tip1') }}</li>
+              <li>{{ t('cta_tip2') }}</li>
+            </ul>
+            <div class="cta-copy-row">
+              <button type="button" class="btn btn-outline btn-cta-inline" id="cta-copy-email" data-email="{{ contact_email }}">{{ t('cta_copy_email') }}</button>
+              <button type="button" class="btn btn-outline btn-cta-inline" id="cta-copy-template">{{ t('cta_copy_template') }}</button>
+            </div>
+            <p class="cta-feedback" id="cta-copy-feedback" role="status" aria-live="polite"></p>
+          </details>
+        </div>
+      </div>
+    </div>
+    <div class="cta-astro" aria-hidden="true">
+      <div class="astro-bubble">{{ t('cta_bubble') }}</div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.AXIUM_CTA_STRINGS = {
+    mailTemplate: {{ t('cta_mail_template')|tojson }},
+    emailOk: {{ t('cta_js_email_ok')|tojson }},
+    templateOk: {{ t('cta_js_template_ok')|tojson }},
+    copyFail: {{ t('cta_js_copy_fail')|tojson }}
+  };
+</script>
+<script>
+(function () {
+  var el = document.getElementById('a-propos');
+  if (!el) return;
+  if (!window.IntersectionObserver || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.classList.add('is-inview');
+    return;
+  }
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-inview');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+  obs.observe(el);
+})();
+
+(function () {
+  var S = window.AXIUM_CTA_STRINGS || {};
+  var toggle = document.getElementById('cta-launch-toggle');
+  var panel = document.getElementById('cta-project-panel');
+  var copyEmail = document.getElementById('cta-copy-email');
+  var copyTpl = document.getElementById('cta-copy-template');
+  var feed = document.getElementById('cta-copy-feedback');
+  if (!toggle || !panel || !copyEmail || !feed) return;
+
+  var email = copyEmail.getAttribute('data-email') || '';
+  var emailTemplate = S.mailTemplate || '';
+
+  function showFeedback(msg) {
+    feed.textContent = msg;
+    window.setTimeout(function () {
+      feed.textContent = '';
+    }, 5000);
+  }
+
+  function copyToClipboard(text, okMsg) {
+    function manual() {
+      showFeedback(S.copyFail || '');
+      var addr = document.getElementById('contact-email-display');
+      if (text === email && addr && window.getSelection) {
+        var range = document.createRange();
+        range.selectNodeContents(addr);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      navigator.clipboard.writeText(text).then(function () {
+        showFeedback(okMsg);
+      }).catch(manual);
+    } else {
+      manual();
+    }
+  }
+
+  function setPanelOpen(open) {
+    panel.hidden = !open;
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.classList.toggle('is-open', open);
+  }
+
+  toggle.addEventListener('click', function () {
+    var open = toggle.getAttribute('aria-expanded') === 'true';
+    setPanelOpen(!open);
+  });
+
+  copyEmail.addEventListener('click', function () {
+    copyToClipboard(email, S.emailOk || '');
+  });
+
+  if (copyTpl) {
+    copyTpl.addEventListener('click', function () {
+      copyToClipboard(emailTemplate, S.templateOk || '');
+    });
+  }
+
+  if (document.querySelector('.cta-flash')) {
+    setPanelOpen(true);
+  }
+
+  if (window.location.hash === '#contact-cta') {
+    window.setTimeout(function () {
+      setPanelOpen(true);
+      try {
+        panel.focus();
+      } catch (e) {}
+    }, 400);
+  }
+})();
+</script>
+{% endblock %}

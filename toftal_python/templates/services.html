@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ t('services_title') }}{% endblock %}
+{% block body_class %}page-inner page-services{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero--inner" aria-labelledby="services-page-title">
+  <div class="page-hero-bg" aria-hidden="true"></div>
+  <div class="container">
+    <p class="page-hero-eyebrow"><span class="page-hero-eyebrow-dot" aria-hidden="true"></span> {{ t('contact_page_eyebrow') }}</p>
+    <h1 class="page-hero-title page-hero-title--modern" id="services-page-title">{{ t('services_page_h1') }} <span class="title-accent">{{ t('services_page_h1_accent') }}</span></h1>
+    <p class="page-hero-lead">{{ t('services_page_lead') }}</p>
+  </div>
+</section>
+
+<section class="section section--light page-section page-section--light services-page-list" id="liste-services">
+  <div class="container">
+    <p class="section-kicker center">{{ t('services_offer_kicker') }}</p>
+    <h2 class="services-page-section-title section-title--modern">{{ t('services_scope_h2') }} <span class="title-accent">{{ t('services_scope_accent') }}</span></h2>
+    <p class="services-page-blurb">{{ t('services_scope_blurb') }}</p>
+
+    <div class="services-intro-grid services-page-grid">
+      <article class="service-block service-block--page" id="service-ui" data-step="01">
+        <h3>{{ t('sp_ui_h') }}</h3>
+        <p>{{ t('sp_ui_p') }}</p>
+      </article>
+      <article class="service-block service-block--page" id="service-mobile" data-step="02">
+        <h3>{{ t('sp_mobile_h') }}</h3>
+        <p>{{ t('sp_mobile_p') }}</p>
+      </article>
+      <article class="service-block service-block--page" id="service-web" data-step="03">
+        <h3>{{ t('sp_web_h') }}</h3>
+        <p>{{ t('sp_web_p') }}</p>
+      </article>
+      <article class="service-block service-block--page" id="service-erp" data-step="04">
+        <h3>{{ t('sp_erp_h') }}</h3>
+        <p>{{ t('sp_erp_p') }}</p>
+      </article>
+      <article class="service-block service-block--page" id="service-conseil" data-step="05">
+        <h3>{{ t('sp_consult_h') }}</h3>
+        <p>{{ t('sp_consult_p') }}</p>
+      </article>
+    </div>
+
+    <div class="services-page-cta">
+      <a class="btn btn-primary" href="{{ url_for('nous_ecrire') }}">{{ t('services_cta_quote') }}</a>
+      <a class="btn btn-outline" href="mailto:contact@axium.sn">{{ t('services_cta_mail') }}</a>
+      <a class="services-page-back" href="{{ url_for('index') }}#services">{{ t('services_cta_back') }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
