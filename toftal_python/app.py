@@ -85,7 +85,7 @@ app = Flask(
     static_folder="static",
 )
 # Vignettes services : incrémenter après mise à jour des fichiers dans static/img/services/ (cache navigateur).
-_SERVICE_ASSETS_VER = "20260422f"
+_SERVICE_ASSETS_VER = "20260422g"
 _SERVICE_IMAGES_DIR = _ROOT / "static" / "img" / "services"
 log = logging.getLogger("axium")
 _STORAGE = Path(__file__).resolve().parent / "storage"

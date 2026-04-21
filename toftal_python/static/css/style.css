@@ -131,10 +131,12 @@ body {
     overflow-x: hidden;
   }
 
+  /* Pas d’overflow ici : le menu mobile est en position absolute sous la barre ;
+     overflow-x:hidden ferait passer overflow-y en auto et rognerait tout le panneau. */
   .site-header .header-inner {
     max-width: 100%;
     min-width: 0;
-    overflow-x: hidden;
+    overflow: visible;
   }
 }
 
