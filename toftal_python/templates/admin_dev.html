@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AXIUM — maintenance</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; line-height: 1.45; color: #0f172a; background: #f1f5f9; }
+    body { margin: 0; padding: 1.25rem 1rem 2.5rem; max-width: 52rem; margin-inline: auto; }
+    h1 { font-size: 1.35rem; margin: 0 0 0.35rem; }
+    .sub { color: #64748b; font-size: 0.9rem; margin: 0 0 1.25rem; }
+    .flash { padding: 0.65rem 0.85rem; border-radius: 8px; margin-bottom: 0.75rem; }
+    .flash.success { background: #dcfce7; border: 1px solid #86efac; }
+    .flash.error { background: #fee2e2; border: 1px solid #fca5a5; }
+    section { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem 1.1rem; margin-bottom: 1rem; }
+    h2 { font-size: 1.05rem; margin: 0 0 0.65rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { text-align: left; padding: 0.4rem 0.5rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+    th { color: #475569; font-weight: 600; }
+    .ok { color: #15803d; font-weight: 600; }
+    .bad { color: #b91c1c; font-weight: 600; }
+    a { color: #0369a1; }
+    .row-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
+    button, .btn { font: inherit; padding: 0.45rem 0.85rem; border-radius: 8px; cursor: pointer; border: 1px solid #cbd5e1; background: #f8fafc; text-decoration: none; color: inherit; display: inline-block; }
+    button.primary { background: #0f172a; color: #fff; border-color: #0f172a; }
+    code { font-size: 0.85em; background: #f1f5f9; padding: 0.12rem 0.35rem; border-radius: 4px; }
+    ul.compact { margin: 0.35rem 0 0; padding-left: 1.2rem; }
+  </style>
+</head>
+<body>
+  <h1>Panneau maintenance AXIUM</h1>
+  <p class="sub">Pas de compte ni mot de passe : accès limité (localhost, ou variable <code>AXIUM_ADMIN=1</code>, ou <code>?token=</code> si configuré).</p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <section>
+    <h2>Cache navigateur (<code>?v=</code>)</h2>
+    <p style="margin:0 0 0.5rem">Version active : <strong>{{ admin_thumb_ver }}</strong> (base <code>{{ admin_base_ver }}</code>)</p>
+    <form method="post" action="{{ admin_form_action }}">
+      <input type="hidden" name="action" value="bump_cache">
+      <button type="submit" class="primary">Forcer une nouvelle version cache</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Images services</h2>
+    <p style="margin:0 0 0.5rem">Copie depuis <code>img_service/</code> ou <code>img/</code> vers <code>static/img/services/</code>.</p>
+    <form method="post" action="{{ admin_form_action }}">
+      <input type="hidden" name="action" value="sync_images">
+      <button type="submit" class="primary">Synchroniser les vignettes</button>
+    </form>
+    <table style="margin-top:0.75rem">
+      <thead>
+        <tr>
+          <th>Slug</th>
+          <th>Fichier</th>
+          <th>Taille</th>
+          <th>État</th>
+          <th>Liens</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in admin_service_rows %}
+        <tr>
+          <td><code>{{ row.slug }}</code></td>
+          <td><code>{{ row.basename }}</code></td>
+          <td>{% if row.bytes %}{{ row.bytes }} o{% else %}—{% endif %}</td>
+          <td>{% if row.ok %}<span class="ok">OK</span>{% else %}<span class="bad">Manquant / trop petit</span>{% endif %}</td>
+          <td class="row-actions">
+            <a href="{{ row.url_static }}?v={{ admin_thumb_ver }}" target="_blank" rel="noopener">static</a>
+            <a href="{{ row.url_direct }}?v={{ admin_thumb_ver }}" target="_blank" rel="noopener">/i/service</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Pages utiles</h2>
+    <ul class="compact">
+      <li><a href="{{ url_for('index') }}">Accueil</a></li>
+      <li><a href="{{ url_for('services') }}">Services</a></li>
+      <li><a href="{{ url_for('health') }}">Health</a></li>
+      <li><a href="{{ url_for('axium_nettoyer_cookies') }}">Nettoyer les cookies</a></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Accès réseau</h2>
+    {% if admin_token_mode %}
+    <p style="margin:0">Mode jeton : ajoutez <code>?token=…</code> à l’URL de ce panneau (voir <code>AXIUM_ADMIN_TOKEN</code> dans <code>.env</code>).</p>
+    {% elif admin_env_open %}
+    <p style="margin:0"><span class="ok">AXIUM_ADMIN=1</span> — le panneau est accessible depuis n’importe quelle IP. À désactiver en production.</p>
+    {% else %}
+    <p style="margin:0">Par défaut, seules les connexions <strong>localhost</strong> voient ce panneau. Pour un autre poste sur le LAN : <code>AXIUM_ADMIN=1</code> dans l’environnement ou un jeton <code>AXIUM_ADMIN_TOKEN</code>.</p>
+    {% endif %}
+  </section>
+</body>
+</html>

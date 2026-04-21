@@ -35,6 +35,12 @@ Write-Host '=== AXIUM - laissez cette fenetre OUVERTE ===' -ForegroundColor Cyan
 Write-Host "Dossier : $AppDir"
 Write-Host "URL     : http://127.0.0.1:$($env:PORT)/"
 Write-Host "Services: http://127.0.0.1:$($env:PORT)/services/"
+Write-Host "Admin   : http://127.0.0.1:$($env:PORT)/_axium/admin  (ne marche PAS sous http://localhost/... Apache seul)"
+Write-Host "Test    : http://127.0.0.1:$($env:PORT)/health  doit afficher uniquement : ok"
+Write-Host ''
+Write-Host 'ATTENTION : ne fermez pas cette fenetre tant que vous testez le site.' -ForegroundColor Yellow
+Write-Host 'Si le navigateur affiche ERR_CONNECTION_REFUSED : serveur arrete, mauvais port, ou attente' -ForegroundColor Yellow
+Write-Host 'du demarrage — dans la console Flask, cherchez une ligne du type  Running on http://127.0.0.1:' -ForegroundColor Yellow
 Write-Host ''
 
 Set-Location -LiteralPath $AppDir

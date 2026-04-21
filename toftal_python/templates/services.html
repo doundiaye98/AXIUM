@@ -3,49 +3,88 @@
 {% block body_class %}page-inner page-services{% endblock %}
 
 {% block content %}
-<section class="page-hero page-hero--inner" aria-labelledby="services-page-title">
-  <div class="page-hero-bg" aria-hidden="true"></div>
+<!-- axium-services:offers={{ (services_page_offers|default(services_catalog_items, true))|length }} -->
+<section class="page-hero page-hero--inner page-services-hero" aria-labelledby="services-page-title">
+  <div class="page-hero-bg page-services-hero__bg" aria-hidden="true"></div>
+  <div class="page-services-hero__glow page-services-hero__glow--1" aria-hidden="true"></div>
+  <div class="page-services-hero__glow page-services-hero__glow--2" aria-hidden="true"></div>
   <div class="container">
-    <p class="page-hero-eyebrow"><span class="page-hero-eyebrow-dot" aria-hidden="true"></span> {{ t('contact_page_eyebrow') }}</p>
-    <h1 class="page-hero-title page-hero-title--modern" id="services-page-title">{{ t('services_page_h1') }} <span class="title-accent">{{ t('services_page_h1_accent') }}</span></h1>
-    <p class="page-hero-lead">{{ t('services_page_lead') }}</p>
+    <p class="page-hero-eyebrow" data-ax-hero style="--ax-d: 0s"><span class="page-hero-eyebrow-dot" aria-hidden="true"></span> {{ t('services_offer_kicker') }}</p>
+    <h1 class="page-hero-title page-hero-title--modern page-services-hero__title" id="services-page-title" data-ax-hero style="--ax-d: 0.08s">{{ t('services_page_h1') }} <span class="title-accent">{{ t('services_page_h1_accent') }}</span></h1>
+    <p class="page-hero-lead page-services-hero__lead" data-ax-hero style="--ax-d: 0.18s">{{ t('services_page_lead') }}</p>
   </div>
 </section>
 
-<section class="section section--light page-section page-section--light services-page-list" id="liste-services">
+<section class="section section--light page-section page-section--light services-page-list services-page-list--modern" id="liste-services">
   <div class="container">
-    <p class="section-kicker center">{{ t('services_offer_kicker') }}</p>
-    <h2 class="services-page-section-title section-title--modern">{{ t('services_scope_h2') }} <span class="title-accent">{{ t('services_scope_accent') }}</span></h2>
-    <p class="services-page-blurb">{{ t('services_scope_blurb') }}</p>
+    <header class="services-page-header">
+      <h2 class="services-page-section-title section-title--modern">{{ t('services_scope_h2') }} <span class="title-accent">{{ t('services_scope_accent') }}</span></h2>
+      <p class="services-page-blurb">{{ t('services_scope_blurb') }}</p>
+    </header>
 
-    <div class="services-intro-grid services-page-grid">
-      <article class="service-block service-block--page" id="service-ui" data-step="01">
-        <h3>{{ t('sp_ui_h') }}</h3>
-        <p>{{ t('sp_ui_p') }}</p>
-      </article>
-      <article class="service-block service-block--page" id="service-mobile" data-step="02">
-        <h3>{{ t('sp_mobile_h') }}</h3>
-        <p>{{ t('sp_mobile_p') }}</p>
-      </article>
-      <article class="service-block service-block--page" id="service-web" data-step="03">
-        <h3>{{ t('sp_web_h') }}</h3>
-        <p>{{ t('sp_web_p') }}</p>
-      </article>
-      <article class="service-block service-block--page" id="service-erp" data-step="04">
-        <h3>{{ t('sp_erp_h') }}</h3>
-        <p>{{ t('sp_erp_p') }}</p>
-      </article>
-      <article class="service-block service-block--page" id="service-conseil" data-step="05">
-        <h3>{{ t('sp_consult_h') }}</h3>
-        <p>{{ t('sp_consult_p') }}</p>
-      </article>
+    <div
+      class="ax-services-carousel ax-services-offers"
+      id="axium-offers-root"
+      tabindex="0"
+      data-ax-services-carousel
+      data-carousel-counter-aria="{{ t('services_carousel_counter_aria') }}"
+    >
+      <div class="ax-services-carousel__viewport" id="axium-offers-grid">
+        <div class="ax-services-carousel__track" id="ax-services-carousel-track" role="list">
+          {% for offer in services_page_offers|default(services_catalog_items, true) %}
+          {% set svc_thumb_src = url_for('static', filename=(offer.image|default('img/services/ui.jpg', true))) ~ '?v=' ~ (service_thumb_ver|default('1')) %}
+          {% set svc_thumb_alt = ax_svc_prefix ~ '/i/service/' ~ offer.slug ~ '?v=' ~ (service_thumb_ver|default('1')) %}
+          <div class="ax-services-carousel__slide" role="listitem">
+            <article
+              class="ax-services-card service-card-modern"
+              id="{{ offer.anchor_id }}"
+              data-step="{{ offer.step }}"
+            >
+              <div class="service-card-modern__inner">
+                <a class="service-card-modern__thumb" href="{{ url_for('service_detail', slug=offer.slug) }}" aria-label="{{ t('services_card_discover') }} — {{ t(offer.title_key) }}">
+                  <span class="service-card-modern__thumb-pic">
+                    <img class="service-card-modern__thumb-img" src="{{ svc_thumb_src }}" onerror="this.onerror=null;this.src='{{ svc_thumb_alt }}';" alt="{{ t(offer.title_key) }}" width="640" height="360" loading="eager" decoding="async">
+                  </span>
+                  <span class="service-card-modern__thumb-overlay" aria-hidden="true">
+                    <span class="service-card-modern__thumb-label">{{ t('services_card_discover') }}</span>
+                  </span>
+                </a>
+                <div class="service-card-modern__content">
+                  <span class="service-card-modern__index" aria-hidden="true">{{ offer.step }}</span>
+                  <div class="service-card-modern__body">
+                    <h3>{{ t(offer.title_key) }}</h3>
+                    <p>{{ t(offer.intro_key) }}</p>
+                  </div>
+                  <a class="service-card-modern__more" href="{{ url_for('service_detail', slug=offer.slug) }}">{{ t('services_card_discover') }}</a>
+                </div>
+              </div>
+            </article>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="ax-services-carousel__controls">
+        <button type="button" class="btn btn-outline ax-services-carousel__btn ax-services-carousel__btn--prev" aria-controls="ax-services-carousel-track" disabled>
+          <span class="ax-services-carousel__btn-icon" aria-hidden="true">←</span>
+          {{ t('services_carousel_prev') }}
+        </button>
+        <span class="ax-services-carousel__counter" id="ax-services-carousel-counter" aria-live="polite" aria-atomic="true"></span>
+        <button type="button" class="btn btn-primary ax-services-carousel__btn ax-services-carousel__btn--next" aria-controls="ax-services-carousel-track">
+          {{ t('services_carousel_next') }}
+          <span class="ax-services-carousel__btn-icon" aria-hidden="true">→</span>
+        </button>
+      </div>
     </div>
 
-    <div class="services-page-cta">
+    <div class="services-page-cta services-page-cta--modern">
       <a class="btn btn-primary" href="{{ url_for('nous_ecrire') }}">{{ t('services_cta_quote') }}</a>
-      <a class="btn btn-outline" href="mailto:contact@axium.sn">{{ t('services_cta_mail') }}</a>
+      <a class="btn btn-outline" href="{{ mailto_href }}">{{ t('services_cta_mail') }}</a>
       <a class="services-page-back" href="{{ url_for('index') }}#services">{{ t('services_cta_back') }}</a>
     </div>
   </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/services-carousel.js') }}?v={{ service_thumb_ver|default('1') }}" defer></script>
 {% endblock %}

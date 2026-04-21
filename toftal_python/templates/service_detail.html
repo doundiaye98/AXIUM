@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ t(service.meta_title_key) }}{% endblock %}
+{% block body_class %}page-inner page-services page-service-detail{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero--inner page-services-hero page-service-detail__hero" aria-labelledby="service-detail-title">
+  <div class="page-hero-bg page-services-hero__bg" aria-hidden="true"></div>
+  <div class="page-services-hero__glow page-services-hero__glow--1" aria-hidden="true"></div>
+  <div class="page-services-hero__glow page-services-hero__glow--2" aria-hidden="true"></div>
+  <div class="container">
+    <p class="page-hero-eyebrow" data-ax-hero style="--ax-d: 0s"><span class="page-hero-eyebrow-dot" aria-hidden="true"></span> {{ t('service_detail_kicker') }}</p>
+    <h1 class="page-hero-title page-hero-title--modern page-services-hero__title" id="service-detail-title" data-ax-hero style="--ax-d: 0.08s">{{ t(service.title_key) }}</h1>
+    <p class="page-hero-lead page-services-hero__lead" data-ax-hero style="--ax-d: 0.16s">{{ t(service.intro_key) }}</p>
+  </div>
+</section>
+
+<section class="section section--light page-section page-section--light service-detail-body">
+  <div class="container narrow">
+    {% set svc_detail_src = url_for('static', filename=(service.image|default('img/services/ui.jpg', true))) ~ '?v=' ~ (service_thumb_ver|default('1')) %}
+    {% set svc_detail_alt = ax_svc_prefix ~ '/i/service/' ~ service.slug ~ '?v=' ~ (service_thumb_ver|default('1')) %}
+    <figure class="service-detail-figure">
+      <img
+        class="service-detail-figure__img"
+        src="{{ svc_detail_src }}"
+        onerror="this.onerror=null;this.src='{{ svc_detail_alt }}';"
+        alt="{{ t(service.title_key) }}"
+        width="960"
+        height="540"
+        loading="eager"
+        decoding="async">
+    </figure>
+
+    <div class="service-detail-prose">
+      {% for key in service.detail_keys %}
+        <p>{{ t(key) }}</p>
+      {% endfor %}
+    </div>
+
+    <div class="service-detail-book">
+      <p class="service-detail-book__note">{{ t('service_book_note') }}</p>
+      <a class="btn btn-primary service-detail-book__cta" href="{{ url_for('nous_ecrire', service=service.slug) }}#contact-form">{{ t('service_book_cta') }}</a>
+      <a class="service-detail-book__back" href="{{ url_for('services') }}#{{ service.anchor_id }}">{{ t('service_detail_back_list') }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

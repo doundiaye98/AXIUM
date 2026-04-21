@@ -4,14 +4,18 @@
 {% block content %}
 <section class="hero">
   <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-aurora" aria-hidden="true"></div>
+  <div class="hero-grid-lines" aria-hidden="true"></div>
   <div class="container hero-inner">
-    <div class="hero-main">
-      <p class="hero-badge" data-ax-hero style="--ax-d: 0.08s"><span class="hero-badge-dot" aria-hidden="true"></span> {{ t('hero_badge') }}</p>
-      <h1 class="hero-title hero-title--welcome" data-ax-hero style="--ax-d: 0.18s">{{ t('hero_h1_before') }} <span class="brand-line brand-line--shimmer">AXIUM GROUP</span></h1>
-      <p class="hero-lead" data-ax-hero style="--ax-d: 0.32s">{{ t('hero_lead') }}</p>
-      <div class="hero-actions" data-ax-hero style="--ax-d: 0.46s">
-        <a href="#contact-cta" class="btn btn-primary">{{ t('hero_cta_primary') }}</a>
-        <a href="{{ url_for('services') }}" class="btn btn-ghost">{{ t('hero_cta_secondary') }}</a>
+    <div class="hero-main hero-main--framed">
+      <h1 class="hero-title hero-title--home" data-ax-hero style="--ax-d: 0.08s">
+        <span class="hero-title__brand brand-line brand-line--shimmer">{{ t('about_page_h1_full') }}</span>
+        <span class="hero-title__heart">{{ t('hero_title_heart') }}</span>
+      </h1>
+      <p class="hero-lead hero-lead--home" data-ax-hero style="--ax-d: 0.22s">{{ t('hero_lead') }}</p>
+      <div class="hero-actions" data-ax-hero style="--ax-d: 0.36s">
+        <a href="{{ url_for('services') }}" class="btn btn-primary">{{ t('hero_cta_primary') }}</a>
+        <a href="{{ url_for('nous_ecrire') }}" class="btn btn-ghost">{{ t('hero_cta_secondary') }}</a>
       </div>
     </div>
     <div class="hero-astro" aria-hidden="true" data-ax-hero style="--ax-d: 0.22s">
@@ -77,27 +81,58 @@
   <div class="container">
     <p class="section-kicker center" data-ax-motion style="--ax-d: 0s">{{ t('services_head_kicker') }}</p>
     <h2 class="section-title center section-title--modern" data-ax-motion style="--ax-d: 0.06s">{{ t('services_head_title') }} <span class="title-accent">{{ t('services_head_accent') }}</span></h2>
-    <div class="services-intro-grid">
-      <article class="service-block" data-ax-motion style="--ax-d: 0s">
-        <h3>{{ t('svc_ui_h') }}</h3>
-        <p>{{ t('svc_ui_p') }}</p>
-      </article>
-      <article class="service-block" data-ax-motion style="--ax-d: 0.07s">
-        <h3>{{ t('svc_mobile_h') }}</h3>
-        <p>{{ t('svc_home_mobile_p') }}</p>
-      </article>
-      <article class="service-block" data-ax-motion style="--ax-d: 0.14s">
-        <h3>{{ t('svc_web_h') }}</h3>
-        <p>{{ t('svc_home_web_p') }}</p>
-      </article>
-      <article class="service-block" data-ax-motion style="--ax-d: 0.21s">
-        <h3>{{ t('svc_erp_h') }}</h3>
-        <p>{{ t('svc_erp_p') }}</p>
-      </article>
-      <article class="service-block" data-ax-motion style="--ax-d: 0.28s">
-        <h3>{{ t('svc_consult_h') }}</h3>
-        <p>{{ t('svc_consult_p') }}</p>
-      </article>
+    <div
+      class="ax-services-carousel ax-services-offers"
+      id="services-intro-carousel"
+      tabindex="0"
+      data-ax-services-carousel
+      data-carousel-counter-aria="{{ t('services_carousel_counter_aria') }}"
+    >
+      <div class="ax-services-carousel__viewport" id="services-intro-viewport">
+        <div class="ax-services-carousel__track" id="services-intro-track" role="list">
+          {% for offer in services_page_offers|default(services_catalog_items, true) %}
+          {% set svc_thumb_src = url_for('static', filename=(offer.image|default('img/services/ui.jpg', true))) ~ '?v=' ~ (service_thumb_ver|default('1')) %}
+          {% set svc_thumb_alt = ax_svc_prefix ~ '/i/service/' ~ offer.slug ~ '?v=' ~ (service_thumb_ver|default('1')) %}
+          <div class="ax-services-carousel__slide" role="listitem">
+            <article
+              class="ax-services-card service-card-modern"
+              id="{{ offer.anchor_id }}"
+              data-step="{{ offer.step }}"
+            >
+              <div class="service-card-modern__inner">
+                <a class="service-card-modern__thumb" href="{{ url_for('service_detail', slug=offer.slug) }}" aria-label="{{ t('services_card_discover') }} — {{ t(offer.title_key) }}">
+                  <span class="service-card-modern__thumb-pic">
+                    <img class="service-card-modern__thumb-img" src="{{ svc_thumb_src }}" onerror="this.onerror=null;this.src='{{ svc_thumb_alt }}';" alt="{{ t(offer.title_key) }}" width="640" height="360" loading="eager" decoding="async">
+                  </span>
+                  <span class="service-card-modern__thumb-overlay" aria-hidden="true">
+                    <span class="service-card-modern__thumb-label">{{ t('services_card_discover') }}</span>
+                  </span>
+                </a>
+                <div class="service-card-modern__content">
+                  <span class="service-card-modern__index" aria-hidden="true">{{ offer.step }}</span>
+                  <div class="service-card-modern__body">
+                    <h3>{{ t(offer.title_key) }}</h3>
+                    <p>{{ t(offer.intro_key) }}</p>
+                  </div>
+                  <a class="service-card-modern__more" href="{{ url_for('service_detail', slug=offer.slug) }}">{{ t('services_card_discover') }}</a>
+                </div>
+              </div>
+            </article>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="ax-services-carousel__controls">
+        <button type="button" class="btn btn-outline ax-services-carousel__btn ax-services-carousel__btn--prev" aria-controls="services-intro-track" disabled>
+          <span class="ax-services-carousel__btn-icon" aria-hidden="true">←</span>
+          {{ t('services_carousel_prev') }}
+        </button>
+        <span class="ax-services-carousel__counter" id="services-intro-counter" aria-live="polite" aria-atomic="true"></span>
+        <button type="button" class="btn btn-primary ax-services-carousel__btn ax-services-carousel__btn--next" aria-controls="services-intro-track">
+          {{ t('services_carousel_next') }}
+          <span class="ax-services-carousel__btn-icon" aria-hidden="true">→</span>
+        </button>
+      </div>
     </div>
   </div>
 </section>
@@ -105,18 +140,27 @@
 <section class="section--dark-band section-services-cards" aria-label="{{ t('section_cards_aria') }}">
   <div class="container">
     <div class="services-cards">
-      {% set cards = [
-        (t('flip_ui'), 'card-ui'),
-        (t('flip_mobile'), 'card-mobile'),
-        (t('flip_web'), 'card-web'),
-        (t('flip_erp'), 'card-erp'),
-        (t('flip_consult'), 'card-consult'),
-      ] %}
-      {% for title, card_class in cards %}
-      <div class="flip-card {{ card_class }}" tabindex="0" data-ax-motion style="--ax-d: {{ (loop.index0 * 0.07)|round(2) }}s">
+      {# Même ordre et mêmes visuels que le carrousel (static/img/services/). #}
+      {% set flip_card_class = {
+        'ui': 'card-ui',
+        'mobile': 'card-mobile',
+        'web': 'card-web',
+        'erp': 'card-erp',
+        'conseil': 'card-consult',
+      } %}
+      {% for offer in services_page_offers|default(services_catalog_items, true) %}
+      <div class="flip-card {{ flip_card_class[offer.slug] }}" tabindex="0" data-ax-motion style="--ax-d: {{ (loop.index0 * 0.07)|round(2) }}s">
         <div class="flip-inner">
-          <div class="flip-face flip-front"><span class="card-icon" aria-hidden="true"></span><span class="card-title">{{ title }}</span></div>
-          <div class="flip-face flip-back"><span class="card-icon" aria-hidden="true"></span><span class="card-title">{{ title }}</span></div>
+          <div class="flip-face flip-front">
+            {% set _flip = url_for('static', filename=(offer.image|default('img/services/ui.jpg', true))) ~ '?v=' ~ (service_thumb_ver|default('1')) %}
+            {% set _flip_alt = ax_svc_prefix ~ '/i/service/' ~ offer.slug ~ '?v=' ~ (service_thumb_ver|default('1')) %}
+            <img class="flip-card__photo" src="{{ _flip }}" onerror="this.onerror=null;this.src='{{ _flip_alt }}';" alt="" width="52" height="52" loading="lazy" decoding="async" aria-hidden="true">
+            <span class="card-title">{{ t(offer.title_key) }}</span>
+          </div>
+          <div class="flip-face flip-back">
+            <img class="flip-card__photo" src="{{ _flip }}" onerror="this.onerror=null;this.src='{{ _flip_alt }}';" alt="" width="52" height="52" loading="lazy" decoding="async" aria-hidden="true">
+            <span class="card-title">{{ t(offer.title_key) }}</span>
+          </div>
         </div>
       </div>
       {% endfor %}
@@ -246,6 +290,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/services-carousel.js') }}?v={{ service_thumb_ver|default('1') }}" defer></script>
 <script>
   window.AXIUM_CTA_STRINGS = {
     mailTemplate: {{ t('cta_mail_template')|tojson }},
@@ -258,19 +303,39 @@
 (function () {
   var el = document.getElementById('a-propos');
   if (!el) return;
-  if (!window.IntersectionObserver || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  function markInView() {
     el.classList.add('is-inview');
+  }
+  if (!window.IntersectionObserver || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    markInView();
     return;
   }
-  var obs = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) {
-        e.target.classList.add('is-inview');
-        obs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+  function visibleEnough() {
+    var r = el.getBoundingClientRect();
+    return r.top < window.innerHeight * 0.92 && r.bottom > 0;
+  }
+  if (visibleEnough()) {
+    markInView();
+  }
+  var obs = new IntersectionObserver(
+    function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          markInView();
+          obs.unobserve(e.target);
+        }
+      });
+    },
+    { threshold: 0.01, rootMargin: '0px 0px 12% 0px' }
+  );
   obs.observe(el);
+  window.addEventListener(
+    'scroll',
+    function () {
+      if (!el.classList.contains('is-inview') && visibleEnough()) markInView();
+    },
+    { passive: true }
+  );
 })();
 
 (function () {

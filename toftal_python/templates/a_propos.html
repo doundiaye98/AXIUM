@@ -8,9 +8,13 @@
   <div class="page-about-hero__glow page-about-hero__glow--1" aria-hidden="true"></div>
   <div class="page-about-hero__glow page-about-hero__glow--2" aria-hidden="true"></div>
   <div class="container">
-    <p class="page-hero-eyebrow" data-ax-hero style="--ax-d: 0.06s"><span class="page-hero-eyebrow-dot" aria-hidden="true"></span> {{ t('contact_page_eyebrow') }}</p>
-    <h1 class="page-hero-title page-hero-title--modern page-about-hero__title" id="about-page-title" data-ax-hero style="--ax-d: 0.16s">{{ t('about_page_h1_full') }}</h1>
-    <p class="page-hero-lead about-page-tagline page-about-hero__tagline" data-ax-hero style="--ax-d: 0.28s">{{ t('about_page_tagline') }}</p>
+    <div class="about-page-positioning" data-ax-hero style="--ax-d: 0s">
+      <p class="about-page-positioning__line about-page-positioning__line--primary">{{ t('about_positioning_l1') }}</p>
+      <p class="about-page-positioning__line about-page-positioning__line--secondary">{{ t('about_positioning_l2') }}</p>
+    </div>
+    <p class="page-hero-eyebrow" data-ax-hero style="--ax-d: 0.1s"><span class="page-hero-eyebrow-dot" aria-hidden="true"></span> {{ t('contact_page_eyebrow') }}</p>
+    <h1 class="page-hero-title page-hero-title--modern page-about-hero__title" id="about-page-title" data-ax-hero style="--ax-d: 0.2s">{{ t('about_page_h1_full') }}</h1>
+    <p class="page-hero-lead about-page-tagline page-about-hero__tagline" data-ax-hero style="--ax-d: 0.32s">{{ t('about_page_tagline') }}</p>
   </div>
 </section>
 
@@ -44,7 +48,7 @@
     if (!root) return;
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var els = root.querySelectorAll(
-      '.about-rule-text, hr.about-rule, h2.about-section-title, .about-block, .about-closing'
+      '.about-rule-text, hr.about-rule, .about-section-eyebrow, h2.about-section-title, .about-lead-block, .about-vision-panel, .about-block, .about-closing'
     );
     var i = 0;
     els.forEach(function (el) {

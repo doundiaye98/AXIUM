@@ -10,7 +10,10 @@ echo   AXIUM — serveur Flask sur le port %PORT%
 echo   Depuis la racine AXIUM : double-clic sur DEMARRER-ICI.cmd
 echo   Ne tapez PAS run.bat. avec un point ^(PowerShell^).
 echo   URL : http://127.0.0.1:%PORT%/
+echo   Admin : http://127.0.0.1:%PORT%/_axium/admin
+echo   Test Flask : http://127.0.0.1:%PORT%/health  ^(doit afficher : ok^)
 echo   Reparation cookies : http://127.0.0.1:%PORT%/_axium/nettoyer-cookies
+echo   (404 en francais sur :5001 = autre programme utilise le port — voir Demarrer-AXIUM-port-5002.cmd a la racine.)
 echo   NE FERMEZ PAS cette fenetre tant que vous testez le site.
 echo   (La fermer = ERR_CONNECTION_REFUSED dans le navigateur.)
 echo ============================================================

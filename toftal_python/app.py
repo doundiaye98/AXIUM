@@ -13,6 +13,10 @@ gardez la fenêtre ouverte.
 Chat : OPENAI_API_KEY dans .env pour OpenAI. Sans clé, le mode assistant local est actif par défaut
 (sauf AXIUM_CHAT_LOCAL=0). Cookie de session renommé (axium_session) ; l’ancien « session » est
 effacé automatiquement. Si le site plante encore : ouvrir /_axium/nettoyer-cookies puis l’accueil.
+
+Admin local (sans formulaire de connexion) : /_axium/admin — localhost par défaut,
+ou définir AXIUM_ADMIN=1 pour y accéder depuis le réseau (déconseillé en public).
+Option AXIUM_ADMIN_TOKEN : ajouter ?token=VOTRE_CLE à l’URL.
 """
 from __future__ import annotations
 
@@ -20,6 +24,7 @@ import json
 import logging
 import os
 import re
+import shutil
 import secrets
 import sys
 from collections import OrderedDict
@@ -51,9 +56,24 @@ else:
             exc,
         )
 
-from flask import Flask, flash, g, jsonify, make_response, redirect, render_template, request, session, url_for
+from flask import (
+    Flask,
+    abort,
+    flash,
+    g,
+    jsonify,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    send_from_directory,
+    session,
+    url_for,
+)
 
 from i18n import CHAT_SYSTEM_PROMPTS, CHAT_UI, CONTACT_EMAIL, mailto_href, translate
+from services_catalog import BY_SLUG, SERVICES
+from sync_service_images import sync_service_thumbnails_to_static
 from llm_chat import complete_chat
 
 # import_name fixe : avec "python app.py", __name__ vaut __main__ et sans root_path
@@ -64,7 +84,116 @@ app = Flask(
     template_folder="templates",
     static_folder="static",
 )
+# Vignettes services : incrémenter après mise à jour des fichiers dans static/img/services/ (cache navigateur).
+_SERVICE_ASSETS_VER = "20260422c"
+_SERVICE_IMAGES_DIR = _ROOT / "static" / "img" / "services"
 log = logging.getLogger("axium")
+_STORAGE = Path(__file__).resolve().parent / "storage"
+_CONTACT_LOG = _STORAGE / "contact_messages.log"
+_ADMIN_CACHE_BUMP = _STORAGE / "admin_cache_bump.txt"
+
+
+def _service_thumb_version() -> str:
+    """Version affichée pour ?v= sur CSS et vignettes ; suffixe optionnel via panneau admin."""
+    base = _SERVICE_ASSETS_VER
+    try:
+        if _ADMIN_CACHE_BUMP.is_file():
+            extra = _ADMIN_CACHE_BUMP.read_text(encoding="utf-8").strip()
+            if extra and re.fullmatch(r"[A-Za-z0-9._-]{1,48}", extra):
+                return f"{base}-{extra}"
+    except OSError:
+        pass
+    return base
+
+
+def _admin_request_allowed() -> bool:
+    """Accès /_axium/admin : localhost, ou AXIUM_ADMIN=1, ou jeton d’URL si AXIUM_ADMIN_TOKEN est défini."""
+    env_open = (os.environ.get("AXIUM_ADMIN") or "").strip().lower() in ("1", "true", "yes")
+    token_cfg = (os.environ.get("AXIUM_ADMIN_TOKEN") or "").strip()
+    q_token = (request.args.get("token") or "").strip()
+    if token_cfg:
+        return secrets.compare_digest(q_token, token_cfg)
+    if env_open:
+        return True
+    ra = (request.remote_addr or "").strip()
+    if ra in ("127.0.0.1", "127.0.0.0", "::1"):
+        return True
+    if ra.startswith("127."):
+        return True
+    if ra.endswith("127.0.0.1") or "::ffff:127.0.0.1" in ra:
+        return True
+    return False
+
+
+def _admin_service_image_rows():
+    rows: list[dict] = []
+    for meta in SERVICES:
+        rel = str(meta.get("image") or "").replace("\\", "/")
+        basename = Path(rel).name if rel else ""
+        path = _SERVICE_IMAGES_DIR / basename if basename else None
+        ok = bool(path and path.is_file() and path.stat().st_size > 64)
+        size = int(path.stat().st_size) if path and path.is_file() else 0
+        rows.append(
+            {
+                "slug": meta["slug"],
+                "catalog": rel,
+                "basename": basename,
+                "ok": ok,
+                "bytes": size,
+                "url_static": url_for("static", filename=rel) if rel else "",
+                "url_direct": url_for("axium_service_image", service_slug=meta["slug"]),
+            }
+        )
+    return rows
+
+
+def _ensure_service_thumbnails() -> None:
+    """Au démarrage : copie img_service/ (ou img/) → static/img/services/ si absent ou source plus récente."""
+    try:
+        updated = sync_service_thumbnails_to_static(verbose=False)
+    except OSError as exc:
+        log.warning("Synchronisation visuels services impossible : %s", exc)
+        return
+    if updated:
+        log.info("Visuels services : %s fichier(s) synchronisé(s) vers static/img/services/.", updated)
+
+
+_ensure_service_thumbnails()
+
+# Logo en-tête : JPEG si présent dans img/ (ex. logo_Axuim.jpeg), sinon SVG embarqué (évite 404).
+_LOGO_JPEG_DEST = _ROOT / "static" / "img" / "logo-axium.jpeg"
+_LOGO_JPEG_SOURCES: tuple[tuple[Path, str], ...] = (
+    (_ROOT / "img", "logo-axium.jpeg"),
+    (_ROOT / "img", "logo_Axuim.jpeg"),
+    (_ROOT / "img", "logo_axium.jpeg"),
+)
+
+
+def _ensure_logo_jpeg() -> None:
+    _LOGO_JPEG_DEST.parent.mkdir(parents=True, exist_ok=True)
+    for folder, name in _LOGO_JPEG_SOURCES:
+        src = folder / name
+        if not src.is_file():
+            continue
+        if _LOGO_JPEG_DEST.is_file() and _LOGO_JPEG_DEST.stat().st_mtime >= src.stat().st_mtime:
+            return
+        try:
+            shutil.copy2(src, _LOGO_JPEG_DEST)
+            log.info("Logo : copié vers static/img/logo-axium.jpeg (%s)", src.name)
+        except OSError as exc:
+            log.warning("Logo : copie impossible depuis %s : %s", src, exc)
+        return
+
+
+_ensure_logo_jpeg()
+
+
+def _logo_image_static_path() -> str:
+    if _LOGO_JPEG_DEST.is_file() and _LOGO_JPEG_DEST.stat().st_size > 32:
+        return "img/logo-axium.jpeg"
+    return "img/logo-axium.svg"
+
+
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "dev-secret-change-in-production")
 # Ne plus utiliser le cookie par défaut « session » (confusion avec d’anciennes versions qui y
 # stockaient tout le chat → cookie énorme → en-têtes HTTP refusés ou pages cassées).
@@ -82,9 +211,6 @@ if (os.environ.get("RENDER") or "").strip().lower() in ("true", "1", "yes"):
 
 # Ancien nom du cookie Flask / Werkzeug (à effacer côté navigateur à chaque réponse).
 _LEGACY_FLASK_SESSION_COOKIE = "session"
-
-_STORAGE = Path(__file__).resolve().parent / "storage"
-_CONTACT_LOG = _STORAGE / "contact_messages.log"
 
 # Chat : historique en mémoire serveur ; identifiant dans un PETIT cookie dédié (pas dans session Flask).
 CHAT_SESSION_KEY = "ax_chat_messages"
@@ -312,6 +438,59 @@ def _axium_response_headers(response):
     return response
 
 
+def _axium_admin_url(**extra) -> str:
+    """URL du panneau admin en conservant ?token= si configuré."""
+    tok = (request.args.get("token") or "").strip()
+    if tok and (os.environ.get("AXIUM_ADMIN_TOKEN") or "").strip():
+        extra = {**extra, "token": tok}
+    return url_for("axium_admin", **extra)
+
+
+@app.route("/_axium/admin", methods=["GET", "POST"])
+def axium_admin():
+    """Panneau maintenance : synchro vignettes, bump cache, liens de test (sans page de login)."""
+    if not _admin_request_allowed():
+        abort(404)
+    if request.method == "POST":
+        action = (request.form.get("action") or "").strip()
+        if action == "sync_images":
+            try:
+                n = int(sync_service_thumbnails_to_static(verbose=False))
+                _ensure_logo_jpeg()
+                flash(
+                    f"Synchro terminée : {n} fichier(s) services mis à jour vers static/img/services/. "
+                    "Rechargez l’accueil (Ctrl+F5) si les images ne changent pas.",
+                    "success",
+                )
+            except OSError as exc:
+                flash(f"Synchro impossible : {exc}", "error")
+        elif action == "bump_cache":
+            try:
+                _STORAGE.mkdir(parents=True, exist_ok=True)
+                bump = datetime.now(timezone.utc).strftime("%m%d%H%M%S")
+                _ADMIN_CACHE_BUMP.write_text(bump, encoding="utf-8")
+                flash(
+                    f"Suffixe cache navigateur : « {bump} » (ajouté à service_thumb_ver). "
+                    "Rechargez avec Ctrl+F5.",
+                    "success",
+                )
+            except OSError as exc:
+                flash(f"Écriture cache bump impossible : {exc}", "error")
+        return redirect(_axium_admin_url())
+
+    rows = _admin_service_image_rows()
+    _admin_env_open = (os.environ.get("AXIUM_ADMIN") or "").strip().lower() in ("1", "true", "yes")
+    return render_template(
+        "admin_dev.html",
+        admin_service_rows=rows,
+        admin_thumb_ver=_service_thumb_version(),
+        admin_base_ver=_SERVICE_ASSETS_VER,
+        admin_env_open=_admin_env_open,
+        admin_token_mode=bool((os.environ.get("AXIUM_ADMIN_TOKEN") or "").strip()),
+        admin_form_action=_axium_admin_url(),
+    )
+
+
 @app.get("/_axium/nettoyer-cookies")
 def axium_nettoyer_cookies():
     """Page de secours : supprime tous les cookies de session AXIUM pour ce domaine."""
@@ -331,12 +510,26 @@ def axium_nettoyer_cookies():
 @app.context_processor
 def _inject_i18n():
     lang = getattr(g, "lang", "fr")
+    try:
+        ax_prefix = (request.script_root or "").rstrip("/")
+    except RuntimeError:
+        ax_prefix = ""
+
     return {
         "lang": lang,
         "t": lambda key: translate(lang, key),
         "mailto_href": mailto_href(lang),
         "chat_i18n": _chat_ui_merged(lang),
         "chat_llm_configured": _chat_ui_enabled(),
+        "service_thumb_ver": _service_thumb_version(),
+        "ax_svc_prefix": ax_prefix,
+        # Visuels services : URL en dur dans les gabarits /i/service/<slug>?v=… (évite UndefinedError / BuildError).
+        # Filet si une vue oublie de passer services_catalog (évite une grille vide).
+        "services_catalog_default": SERVICES,
+        "offers_default": SERVICES,
+        # Alias explicite (évite tout conflit avec un nom générique « offers » dans le contexte).
+        "services_catalog_items": SERVICES,
+        "logo_static": _logo_image_static_path(),
     }
 
 
@@ -455,9 +648,36 @@ def api_chat_reset():
     return resp
 
 
+@app.route("/i/service/<string:service_slug>", methods=["GET"])
+def axium_service_image(service_slug: str):
+    """Sert le visuel d’une offre depuis static/img/services/."""
+    key = (service_slug or "").strip().lower().rstrip("/")
+    meta = BY_SLUG.get(key)
+    if not meta:
+        abort(404)
+    try:
+        rel = str(meta["image"]).replace("\\", "/").strip()
+    except (TypeError, ValueError):
+        abort(404)
+    if ".." in rel or not rel.startswith("img/services/"):
+        abort(404)
+    basename = Path(rel).name
+    if not basename or "/" in basename:
+        abort(404)
+    path = _SERVICE_IMAGES_DIR / basename
+    if not path.is_file():
+        log.warning("Visuel service manquant : %s (slug=%s)", path, key)
+        abort(404)
+    return send_from_directory(str(_SERVICE_IMAGES_DIR), basename, max_age=3600)
+
+
 @app.route("/")
 def index():
-    return render_template("index.html", contact_email=CONTACT_EMAIL)
+    return render_template(
+        "index.html",
+        contact_email=CONTACT_EMAIL,
+        services_page_offers=list(SERVICES),
+    )
 
 
 @app.route("/a-propos")
@@ -469,7 +689,19 @@ def a_propos():
 @app.route("/services")
 @app.route("/services/")
 def services():
-    return render_template("services.html")
+    items = list(SERVICES)
+    if not items:
+        log.error("services_catalog.SERVICES est vide : la page /services/ n'affichera aucune offre.")
+    return render_template("services.html", services_page_offers=items)
+
+
+@app.route("/services/<slug>/")
+def service_detail(slug: str):
+    key = (slug or "").strip().lower()
+    meta = BY_SLUG.get(key)
+    if not meta:
+        abort(404)
+    return render_template("service_detail.html", service=meta)
 
 
 @app.route("/realisations")
@@ -535,7 +767,17 @@ def nous_ecrire():
     """Page « Nous écrire » : formulaire et alternatives (e-mail, modèle)."""
     if request.method == "POST":
         return _handle_contact_post()
-    return render_template("nous_ecrire.html", contact_email=CONTACT_EMAIL)
+    lang = getattr(g, "lang", "fr")
+    prefill_slug = (request.args.get("service") or "").strip().lower()
+    prefill_msg = ""
+    if prefill_slug in BY_SLUG:
+        pkey = BY_SLUG[prefill_slug]["prefill_key"]
+        prefill_msg = translate(lang, pkey)
+    return render_template(
+        "nous_ecrire.html",
+        contact_email=CONTACT_EMAIL,
+        contact_prefill_message=prefill_msg,
+    )
 
 
 @app.route("/contact", methods=["POST"])
@@ -546,7 +788,7 @@ def contact():
 
 def _assert_axium_routes_complete() -> None:
     """Évite un site « à moitié chargé » si `python app.py` est lancé depuis un mauvais dossier."""
-    required = ("index", "services", "nous_ecrire", "a_propos", "realisations")
+    required = ("index", "services", "nous_ecrire", "a_propos", "realisations", "axium_admin")
     missing = [ep for ep in required if ep not in app.view_functions]
     if missing:
         raise RuntimeError(
@@ -575,10 +817,14 @@ if __name__ == "__main__":
             _probe.settimeout(0.4)
             if _probe.connect_ex(("127.0.0.1", port)) == 0:
                 print(
-                    "\n[AXIUM] Le port {p} est déjà utilisé (autre serveur ou ancien « python app.py »).\n"
-                    "          Fermez l’autre fenêtre, ou changez de port :\n"
-                    "            • cmd :  set PORT=5002 && python app.py\n"
-                    "            • PowerShell :  $env:PORT=\"5002\"; python app.py\n".format(p=port),
+                    "\n[AXIUM] Le port {p} est déjà utilisé — Flask ne peut pas démarrer.\n"
+                    "          Ce qui écoute sur ce port n’est en général PAS AXIUM (ex. Apache/WAMP, autre appli).\n"
+                    "          Si vous ouvrez http://127.0.0.1:{p}/_axium/admin sans Flask, vous obtiendrez une 404 « introuvable ».\n"
+                    "          • Libérez le port ou utilisez un autre port, puis relancez :\n"
+                    "            cmd :  set PORT=5002 && python app.py\n"
+                    "            PowerShell :  $env:PORT=\"5002\"; python app.py\n"
+                    "          • Vérifier quel programme utilise le port (invite admin) :\n"
+                    "            netstat -ano | findstr :{p}\n".format(p=port),
                     file=sys.stderr,
                 )
                 sys.exit(1)

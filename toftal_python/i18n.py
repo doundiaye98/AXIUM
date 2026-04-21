@@ -11,6 +11,32 @@ from about_builtin import ABOUT_PAGES, about_fallback
 
 CONTACT_EMAIL = "contact@axium.sn"
 
+# Accueil — hero (filet si locale/*.json incomplet ou absent au déploiement)
+_HOME_HERO_FALLBACK: dict[str, dict[str, str]] = {
+    "fr": {
+        "hero_title_heart": "Le cœur digital de la nouvelle Afrique.",
+        "hero_lead": (
+            "Nous concevons les infrastructures technologiques, financières et digitales "
+            "qui transforment les économies africaines."
+        ),
+        "hero_cta_primary": "Découvrir nos solutions",
+        "hero_cta_secondary": "Contacter un expert",
+        "astro_hi": "Votre réussite, notre priorité",
+        "svg_hero_alt": "AXIUM — innovation digitale",
+    },
+    "en": {
+        "hero_title_heart": "The digital heart of the new Africa.",
+        "hero_lead": (
+            "We design the technological, financial and digital infrastructure "
+            "that transforms African economies."
+        ),
+        "hero_cta_primary": "Discover our solutions",
+        "hero_cta_secondary": "Contact an expert",
+        "astro_hi": "Your success is our priority",
+        "svg_hero_alt": "AXIUM — digital innovation",
+    },
+}
+
 _ROOT = Path(__file__).resolve().parent
 _log = logging.getLogger("axium")
 
@@ -41,9 +67,10 @@ def _read_about_embed(code: str) -> dict[str, str]:
 def _load_locale(code: str) -> dict[str, str]:
     """
     Couches (dans l'ordre) :
-    1) about_embed.json pour la langue — garantit les clés about_* même sans JSON principal ;
+    1) about_embed.json — textes de secours (about_*, hero_*, etc.) si le JSON principal est incomplet ;
     2) locale/{code}.json — version principale ;
-    3) locale/{code}_extra.json — complète uniquement les clés encore absentes.
+    3) locale/{code}_extra.json — complète uniquement les clés encore absentes ;
+    4) about_builtin (Python) puis filet hero (_HOME_HERO_FALLBACK).
     """
     main = _ROOT / "locale" / f"{code}.json"
     extra = _ROOT / "locale" / f"{code}_extra.json"
@@ -68,11 +95,23 @@ def _load_locale(code: str) -> dict[str, str]:
         except (OSError, json.JSONDecodeError) as exc:
             _log.warning("i18n : lecture impossible %s (%s)", extra, exc)
     # Dernier filet : textes « À propos » en Python (toujours présents, même sans dossier locale/)
+    def _builtin_str(val: object) -> str:
+        if isinstance(val, str):
+            return val
+        if isinstance(val, tuple):
+            return "".join(str(x) for x in val)
+        return str(val)
+
     _builtin = ABOUT_PAGES.get(code) or ABOUT_PAGES["fr"]
     for bk, bv in _builtin.items():
         cur = merged.get(bk, "")
         if not (isinstance(cur, str) and cur.strip()):
-            merged[bk] = bv
+            merged[bk] = _builtin_str(bv)
+    _home = _HOME_HERO_FALLBACK.get(code) or _HOME_HERO_FALLBACK["fr"]
+    for hk, hv in _home.items():
+        cur = merged.get(hk, "")
+        if not (isinstance(cur, str) and cur.strip()):
+            merged[hk] = _builtin_str(hv)
     return merged
 
 
@@ -82,8 +121,41 @@ MESSAGES: dict[str, dict[str, str]] = {
 }
 
 
+def _locales_bundle_mtime() -> float:
+    """Dernière modification parmi les JSON de locale (rechargement sans redémarrer le serveur)."""
+    mt = 0.0
+    for rel in (
+        "fr.json",
+        "en.json",
+        "fr_extra.json",
+        "en_extra.json",
+        "about_embed.json",
+    ):
+        path = _ROOT / "locale" / rel
+        try:
+            mt = max(mt, path.stat().st_mtime)
+        except OSError:
+            continue
+    return mt
+
+
+_LAST_LOCALE_BUNDLE_MT: float = _locales_bundle_mtime()
+
+
+def _maybe_reload_locales() -> None:
+    """Si les fichiers locale/*.json ont changé depuis le dernier chargement, recharge MESSAGES."""
+    global _LAST_LOCALE_BUNDLE_MT
+    cur = _locales_bundle_mtime()
+    if cur <= _LAST_LOCALE_BUNDLE_MT:
+        return
+    _LAST_LOCALE_BUNDLE_MT = cur
+    MESSAGES["fr"] = _load_locale("fr")
+    MESSAGES["en"] = _load_locale("en")
+
+
 def translate(lang: str, key: str) -> str:
     """Retourne la chaîne pour la langue demandée, avec repli sur le français puis sur la clé."""
+    _maybe_reload_locales()
     key_s = str(key)
     lg = lang if lang in MESSAGES else "fr"
     table = MESSAGES[lg]

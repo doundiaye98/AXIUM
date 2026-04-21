@@ -1,4 +1,5 @@
 storage/*.log
+storage/admin_cache_bump.txt
 __pycache__/
 *.pyc
 .env

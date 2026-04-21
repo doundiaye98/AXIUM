@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" fill="none" role="img" aria-labelledby="t">
+  <title id="t">Conseil informatique</title>
+  <defs>
+    <linearGradient id="cbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0f18"/>
+      <stop offset="100%" stop-color="#162032"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" rx="28" fill="url(#cbg)"/>
+  <circle cx="400" cy="210" r="120" stroke="rgba(34,211,238,0.25)" stroke-width="2" fill="rgba(34,211,238,0.05)"/>
+  <circle cx="400" cy="210" r="72" stroke="rgba(232,197,71,0.35)" stroke-width="2" fill="none"/>
+  <path d="M400 118v48M400 254v48M292 210h48M460 210h48" stroke="rgba(248,250,252,0.2)" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="400" cy="210" r="16" fill="rgba(34,211,238,0.6)"/>
+  <rect x="96" y="96" width="140" height="88" rx="12" fill="rgba(248,250,252,0.04)" stroke="rgba(248,250,252,0.12)"/>
+  <rect x="564" y="96" width="140" height="88" rx="12" fill="rgba(248,250,252,0.04)" stroke="rgba(248,250,252,0.12)"/>
+  <rect x="96" y="266" width="140" height="88" rx="12" fill="rgba(248,250,252,0.04)" stroke="rgba(248,250,252,0.12)"/>
+  <rect x="564" y="266" width="140" height="88" rx="12" fill="rgba(248,250,252,0.04)" stroke="rgba(248,250,252,0.12)"/>
+</svg>

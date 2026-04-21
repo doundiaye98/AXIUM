@@ -8,6 +8,9 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /health
+    # Render injecte PORT automatiquement : Gunicorn écoute sur 0.0.0.0:$PORT (voir Dockerfile).
     envVars:
+      - key: RENDER
+        value: "true"
       - key: FLASK_SECRET_KEY
         generateValue: true

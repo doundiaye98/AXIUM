@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AXIUM — ouvrir le site Flask</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; color: #0f172a; }
+    h1 { font-size: 1.25rem; }
+    .box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; }
+    code { background: #e2e8f0; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+    a { color: #0369a1; }
+    .warn { color: #9a3412; }
+  </style>
+</head>
+<body>
+  <h1>AXIUM — ce dossier est servi par WAMP, le site par Flask</h1>
+  <p>Si vous voyez une erreur <strong>404</strong> du style «&nbsp;L’URL demandée est introuvable sur le serveur&nbsp;» en ouvrant une adresse du type <code>/_axium/admin</code> ou <code>/services/</code> sous <code>http://localhost/...</code>, c’est normal&nbsp;: <span class="warn">Apache ne connaît pas ces chemins</span>. Il faut lancer l’application Python puis utiliser le <strong>port Flask</strong> (souvent <strong>5001</strong>).</p>
+  <div class="box">
+    <p><strong>0.</strong> <span class="warn"><strong>ERR_CONNECTION_REFUSED</strong></span> sur <code>127.0.0.1</code> = rien n’écoute (fenêtre Flask fermée, plantage au démarrage, ou mauvais numéro de port). Relancez <code>DEMARRER-ICI.cmd</code> ou <code>Demarrer-AXIUM-port-5002.cmd</code>, gardez la console ouverte, attendez « Running on… », puis utilisez <strong>le même port</strong> dans le navigateur.</p>
+    <p><strong>1.</strong> Double-clic sur <code>DEMARRER-ICI.cmd</code> à la racine du projet (laissez la fenêtre ouverte).</p>
+    <p><strong>2.</strong> Ouvrez dans le navigateur&nbsp;:</p>
+    <ul>
+      <li><a href="http://127.0.0.1:5001/">Accueil du site</a></li>
+      <li><a href="http://127.0.0.1:5001/_axium/admin">Panneau maintenance (admin)</a></li>
+    </ul>
+    <p>Si le port affiché au démarrage n’est pas 5001, remplacez <code>5001</code> dans ces liens.</p>
+    <p class="warn"><strong>404 en français sur <code>127.0.0.1:5001</code> ?</strong> Le port est souvent pris par un autre service (WAMP, etc.) et Flask n’a pas démarré. Test rapide : ouvrez <a href="http://127.0.0.1:5001/health">/health</a> — vous devez voir le texte <code>ok</code> seul. Sinon ce n’est pas AXIUM. Utilisez un autre port : double-clic sur <code>Demarrer-AXIUM-port-5002.cmd</code> à la racine du projet, ou dans PowerShell : <code>$env:PORT='5002'</code> puis relancez le démarrage.</p>
+  </div>
+</body>
+</html>

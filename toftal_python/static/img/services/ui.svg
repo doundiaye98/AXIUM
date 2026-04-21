@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" fill="none" role="img" aria-labelledby="t">
+  <title id="t">UI / UX design</title>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="55%" stop-color="#1e3a5f"/>
+      <stop offset="100%" stop-color="#0c4a6e"/>
+    </linearGradient>
+    <linearGradient id="a" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#e8c547" stop-opacity="0.6"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" rx="28" fill="url(#g)"/>
+  <rect x="48" y="52" width="704" height="346" rx="16" stroke="url(#a)" stroke-width="2" fill="rgba(15,23,42,0.35)"/>
+  <rect x="88" y="96" width="200" height="120" rx="10" fill="rgba(34,211,238,0.12)" stroke="rgba(34,211,238,0.35)"/>
+  <rect x="312" y="96" width="392" height="56" rx="8" fill="rgba(248,250,252,0.06)" stroke="rgba(248,250,252,0.12)"/>
+  <rect x="312" y="172" width="240" height="44" rx="8" fill="rgba(248,250,252,0.05)" stroke="rgba(248,250,252,0.1)"/>
+  <circle cx="620" cy="194" r="36" fill="rgba(232,197,71,0.15)" stroke="rgba(232,197,71,0.45)"/>
+  <path d="M88 268h624" stroke="rgba(34,211,238,0.2)" stroke-width="1"/>
+  <rect x="88" y="292" width="160" height="72" rx="8" fill="rgba(34,211,238,0.08)"/>
+  <rect x="264" y="292" width="160" height="72" rx="8" fill="rgba(248,250,252,0.04)"/>
+  <rect x="440" y="292" width="160" height="72" rx="8" fill="rgba(248,250,252,0.04)"/>
+</svg>

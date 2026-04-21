@@ -4,17 +4,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0a1628">
+  <meta name="theme-color" content="#060d16">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="{{ t('meta_description') }}">
   <title>{% block title %}{{ t('title_default') }}{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&family=Orbitron:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ service_thumb_ver|default('1') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/premium-layer.css') }}?v={{ service_thumb_ver|default('1') }}">
   <script>document.documentElement.classList.add('has-js');</script>
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="ax-broadcast-shell {% block body_class %}{% endblock %}">
   <a class="skip-link" href="#main">{{ t('skip_content') }}</a>
   <a class="skip-link skip-link--footer" href="#footer">{{ t('skip_footer') }}</a>
 
@@ -22,7 +24,7 @@
     <div class="site-header__accent" aria-hidden="true"></div>
     <div class="container header-inner">
       <a href="{{ url_for('index') }}" class="logo">
-        <img class="logo_image" src="{{ url_for('static', filename='img/logo-axium.jpeg') }}" width="200" height="52" alt="{{ t('logo_alt') }}">
+        <img class="logo_image" src="{{ url_for('static', filename=(logo_static|default('img/logo-axium.svg', true))) }}" width="200" height="52" alt="{{ t('logo_alt') }}">
       </a>
       <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="{{ t('menu_aria') }}">
         <span></span><span></span><span></span>
@@ -58,13 +60,14 @@
     <div class="container footer-grid">
       <div>
         <a href="{{ url_for('index') }}" class="logo footer-logo">
-          <img class="logo_image" src="{{ url_for('static', filename='img/logo-axium.jpeg') }}" width="200" height="52" alt="{{ t('logo_alt') }}" loading="lazy">
+          <img class="logo_image" src="{{ url_for('static', filename=(logo_static|default('img/logo-axium.svg', true))) }}" width="200" height="52" alt="{{ t('logo_alt') }}" loading="lazy">
         </a>
         <ul class="footer-nav">
           <li><a href="{{ url_for('index') }}">{{ t('nav_home') }}</a></li>
           <li><a href="{{ url_for('a_propos') }}">{{ t('nav_about') }}</a></li>
           <li><a href="{{ url_for('services') }}">{{ t('nav_services') }}</a></li>
           <li><a href="{{ url_for('realisations') }}">{{ t('nav_work') }}</a></li>
+          <li><a href="{{ url_for('nous_ecrire') }}">{{ t('nav_write_us') }}</a></li>
         </ul>
       </div>
       <div class="footer-social">
@@ -192,12 +195,19 @@
     })();
     (function () {
       if (!document.documentElement.classList.contains('has-js')) return;
+      var els = document.querySelectorAll('[data-ax-motion]');
+      function markIfVisible(el) {
+        if (el.classList.contains('is-inview')) return;
+        var r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight * 0.94 && r.bottom > -8) el.classList.add('is-inview');
+      }
       if (!window.IntersectionObserver || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        document.querySelectorAll('[data-ax-motion]').forEach(function (el) {
+        els.forEach(function (el) {
           el.classList.add('is-inview');
         });
         return;
       }
+      els.forEach(markIfVisible);
       var obs = new IntersectionObserver(
         function (entries) {
           entries.forEach(function (e) {
@@ -207,11 +217,20 @@
             }
           });
         },
-        { threshold: 0.06, rootMargin: '0px 0px -6% 0px' }
+        { threshold: 0.01, rootMargin: '0px 0px 12% 0px' }
       );
-      document.querySelectorAll('[data-ax-motion]').forEach(function (el) {
-        obs.observe(el);
+      els.forEach(function (el) {
+        if (!el.classList.contains('is-inview')) obs.observe(el);
       });
+      window.addEventListener(
+        'scroll',
+        function () {
+          els.forEach(function (el) {
+            if (!el.classList.contains('is-inview')) markIfVisible(el);
+          });
+        },
+        { passive: true }
+      );
     })();
   </script>
   {% block scripts %}{% endblock %}

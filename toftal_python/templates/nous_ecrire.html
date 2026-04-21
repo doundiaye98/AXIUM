@@ -54,7 +54,7 @@
             </label>
             <label class="cta-field">
               <span class="cta-field-label">{{ t('form_message') }} <abbr title="{{ t('form_required_abbr') }}">*</abbr></span>
-              <textarea name="message" required minlength="10" maxlength="8000" rows="5" placeholder="{{ t('form_message_ph') }}"></textarea>
+              <textarea name="message" required minlength="10" maxlength="8000" rows="5" placeholder="{{ t('form_message_ph') }}">{% if contact_prefill_message %}{{ contact_prefill_message }}{% endif %}</textarea>
             </label>
             <button type="submit" class="btn btn-primary cta-form-submit">{{ t('form_submit') }}</button>
             <p class="cta-form-note">{{ t('form_privacy') }}</p>
