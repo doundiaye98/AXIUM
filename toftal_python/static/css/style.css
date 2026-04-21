@@ -62,6 +62,14 @@
 
 html {
   scroll-behavior: smooth;
+  /* Évite le défilement horizontal parasite (100vw, marges négatives) sur mobile */
+  overflow-x: clip;
+}
+
+@supports not (overflow: clip) {
+  html {
+    overflow-x: hidden;
+  }
 }
 
 ::selection {
@@ -161,6 +169,15 @@ body::before {
 .container {
   width: min(1290px, 92vw);
   margin-inline: auto;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .container {
+    width: 100%;
+    max-width: none;
+    padding-inline: max(1rem, env(safe-area-inset-left, 0px)) max(1rem, env(safe-area-inset-right, 0px));
+  }
 }
 
 .narrow {
@@ -4475,7 +4492,8 @@ html.has-js .ax-services-carousel.ax-services-offers .ax-services-card.service-c
   position: absolute;
   right: 0;
   bottom: 0;
-  width: min(100vw - 1.5rem, 400px);
+  width: 400px;
+  max-width: calc(100vw - 1.5rem - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
   max-height: min(72vh, 560px);
   display: flex;
   flex-direction: column;
@@ -4745,11 +4763,20 @@ html.has-js .ax-services-carousel.ax-services-offers .ax-services-card.service-c
 }
 
 @media (max-width: 480px) {
+  .ax-chat {
+    left: max(0px, env(safe-area-inset-left, 0px));
+    right: max(0px, env(safe-area-inset-right, 0px));
+    width: auto;
+    padding-inline: max(0.5rem, env(safe-area-inset-left, 0px)) max(0.5rem, env(safe-area-inset-right, 0px));
+    box-sizing: border-box;
+  }
+
   .ax-chat-panel {
-    width: 100vw;
-    max-width: none;
+    width: 100%;
+    max-width: 100%;
     right: 0;
-    left: auto;
+    left: 0;
+    margin-inline: auto;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     max-height: 85vh;
   }

@@ -189,13 +189,21 @@ html {
   background: #f1f5f9;
 }
 
-/* Conteneur */
+/* Conteneur : largeur 100 % + gouttières (évite 100vw + bandes / scroll horizontal sur mobile) */
 .ax-broadcast-shell .container {
-  width: min(1340px, calc(100vw - clamp(1rem, 4.5vw, 3.5rem)));
+  width: min(1340px, 100%);
+  max-width: 100%;
+  margin-inline: auto;
+  padding-inline: max(1rem, env(safe-area-inset-left, 0px)) max(1rem, env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
 }
 
 .ax-broadcast-shell .narrow {
-  width: min(820px, calc(100vw - clamp(1rem, 4.5vw, 3.5rem)));
+  width: min(820px, 100%);
+  max-width: 100%;
+  margin-inline: auto;
+  padding-inline: max(1rem, env(safe-area-inset-left, 0px)) max(1rem, env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
 }
 
 /* Menu mobile : panneau sombre cohérent */
@@ -291,6 +299,16 @@ html {
   padding-top: max(2rem, env(safe-area-inset-top));
   padding-bottom: max(3rem, env(safe-area-inset-bottom));
   box-shadow: inset 0 -1px 0 rgba(34, 211, 238, 0.1);
+}
+
+/* Mobile : hero moins « plein écran », contenu aligné en haut → défilement vers les sections suivantes plus naturel */
+@media (max-width: 900px) {
+  .ax-broadcast-shell .hero {
+    min-height: 0;
+    justify-content: flex-start;
+    padding-top: max(1.25rem, env(safe-area-inset-top, 0px));
+    padding-bottom: clamp(2.25rem, 7vw, 3.75rem);
+  }
 }
 
 .ax-broadcast-shell .hero-aurora {
