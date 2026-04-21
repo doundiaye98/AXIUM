@@ -105,6 +105,44 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Mobile : iOS / WebKit — forcer la largeur réelle (évite débordement à droite) */
+@media (max-width: 900px) {
+  html {
+    overflow-x: hidden;
+  }
+
+  body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+  }
+
+  #main {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  .hero,
+  .section,
+  .section--dark-band,
+  .site-footer {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .site-header .header-inner {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 h1,
 h2,
 h3,
@@ -158,23 +196,42 @@ body::before {
   }
 }
 
+/* Hors écran sans coordonnée -999px (élargit le scroll horizontal sur mobile) */
 .skip-link {
   position: absolute;
-  left: -999px;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
   top: 0;
-  background: var(--navy-deep);
-  color: var(--cyan-accent);
-  padding: 0.5rem 1rem;
+  left: 0;
   z-index: 1000;
   font-weight: 600;
 }
 
-.skip-link:focus {
+.skip-link:focus,
+.skip-link:focus-visible {
   left: 1rem;
   top: 1rem;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  white-space: normal;
+  background: var(--navy-deep);
+  color: var(--cyan-accent);
 }
 
-.skip-link.skip-link--footer:focus {
+.skip-link.skip-link--footer:focus,
+.skip-link.skip-link--footer:focus-visible {
   top: 3.75rem;
 }
 
@@ -1235,6 +1292,9 @@ body.nav-drawer-open {
 
 .marquee {
   mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 .marquee-track {
@@ -1342,7 +1402,8 @@ body.nav-drawer-open {
   }
 
   .logos-marquee-axium .marquee {
-    overflow: visible;
+    overflow-x: hidden;
+    overflow-y: visible;
     mask-image: none;
   }
 
@@ -2952,6 +3013,9 @@ html.has-js .section-about-axium.is-inview .axium-reveal--4 {
   margin: 0 0 clamp(2.25rem, 4vw, 3rem);
   position: relative;
   z-index: 2;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
 }
 
 .ax-services-carousel.ax-services-offers:focus-visible {
@@ -2971,6 +3035,7 @@ html.has-js .section-about-axium.is-inview .axium-reveal--4 {
   /* Largeur de référence pour les slides : évite flex à 0 px si le JS mesure trop tôt. */
   container-type: inline-size;
   container-name: ax-offers-carousel;
+  contain: inline-size;
 }
 
 .ax-services-carousel.ax-services-offers .ax-services-carousel__track {
