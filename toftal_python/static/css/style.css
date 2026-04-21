@@ -72,6 +72,18 @@ html {
   }
 }
 
+#main {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+@supports not (overflow: clip) {
+  #main {
+    overflow-x: hidden;
+  }
+}
+
 ::selection {
   background: rgba(34, 211, 238, 0.3);
   color: var(--navy-deepest);
@@ -2951,6 +2963,8 @@ html.has-js .section-about-axium.is-inview .axium-reveal--4 {
 .ax-services-carousel.ax-services-offers .ax-services-carousel__viewport {
   overflow: hidden;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: min(70vw, 420px);
   border-radius: calc(var(--radius-xl) + 4px);
   position: relative;

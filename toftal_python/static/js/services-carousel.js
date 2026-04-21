@@ -20,13 +20,16 @@
     var layoutRetryTimer = null;
     var layoutZeroRetries = 0;
 
+    function capToViewport(px) {
+      var cap = Math.round(document.documentElement.clientWidth || window.innerWidth || 0);
+      if (cap > 2 && px > cap) return cap;
+      return px;
+    }
+
     function layout() {
+      /* Largeur = celle du viewport du carrousel uniquement. Ne pas prendre le max avec .container :
+       * le parent peut déjà être élargi par la piste flex (slides) → w énorme → page horizontale sur mobile. */
       var w = Math.round(viewport.getBoundingClientRect().width);
-      var sectionW = 0;
-      var container = root.closest('.container');
-      if (container) sectionW = Math.round(container.getBoundingClientRect().width);
-      if (sectionW > 2) w = Math.max(w, sectionW);
-      w = Math.max(w, Math.round(root.getBoundingClientRect().width));
       /* Première mesure parfois 0 (onglet en arrière-plan, fonts, flex) → vignettes à largeur 0 et images « cassées ». */
       if (w < 2) {
         if (layoutZeroRetries < 60) {
@@ -38,11 +41,11 @@
           }, 50);
           return;
         }
-        var fallback = root.parentElement ? Math.round(root.parentElement.getBoundingClientRect().width) : 0;
-        w = fallback > 2 ? fallback : Math.min(1200, Math.max(320, window.innerWidth || 640));
+        w = Math.min(1200, Math.max(320, Math.round(document.documentElement.clientWidth || window.innerWidth || 640)));
       } else {
         layoutZeroRetries = 0;
       }
+      w = capToViewport(w);
       for (var i = 0; i < slides.length; i++) {
         slides[i].style.flex = '0 0 ' + w + 'px';
         slides[i].style.width = w + 'px';
@@ -54,7 +57,7 @@
 
     function go(i, instant) {
       idx = Math.max(0, Math.min(n - 1, i));
-      var w = Math.round(viewport.getBoundingClientRect().width);
+      var w = capToViewport(Math.round(viewport.getBoundingClientRect().width));
       var x = -idx * w;
       track.style.transition = instant || reduceMotion ? 'none' : 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
       track.style.transform = 'translate3d(' + x + 'px,0,0)';
